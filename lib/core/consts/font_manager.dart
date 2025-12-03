@@ -1,7 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class FontConstants {
-  static const String fontFamily = "";
+  static const String fontFamily = "Poppins";
+
+  // Get Poppins TextTheme
+  static TextTheme get poppinsTextTheme => GoogleFonts.poppinsTextTheme();
+
+  // Get Poppins TextStyle with custom properties
+  static TextStyle getPoppinsStyle({
+    double? fontSize,
+    FontWeight? fontWeight,
+    Color? color,
+    double? height,
+    double? letterSpacing,
+  }) {
+    return GoogleFonts.poppins(
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      color: color,
+      height: height,
+      letterSpacing: letterSpacing,
+    );
+  }
 }
 
 class FontWeightManager {
@@ -25,6 +46,7 @@ class FontSize {
   static const double s26 = 26.0;
   static const double s28 = 28.0;
   static const double s30 = 30.0;
+  static const double s32 = 32.0;
   static const double s36 = 36.0;
   static const double s60 = 60.0;
 }
