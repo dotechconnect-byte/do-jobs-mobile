@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/consts/color_manager.dart';
-import '../../../core/consts/font_manager.dart';
-import '../../../core/utils/validators.dart';
-import '../../../core/widgets/custom_button.dart';
-import '../../../core/widgets/custom_text_field.dart';
+import '../../../../core/consts/color_manager.dart';
+import '../../../../core/consts/font_manager.dart';
+import '../../../../core/utils/validators.dart';
+import '../../../../core/widgets/custom_button.dart';
+import '../../../../core/widgets/custom_text_field.dart';
 
 class SignInScreen extends StatefulWidget {
   final VoidCallback onBiometricLogin;

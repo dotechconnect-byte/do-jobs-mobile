@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/consts/color_manager.dart';
-import '../../../core/consts/font_manager.dart';
-import '../../../core/utils/validators.dart';
-import '../../../core/widgets/account_type_toggle.dart';
-import '../../../core/widgets/custom_button.dart';
-import '../../../core/widgets/custom_text_field.dart';
+import '../../../../core/consts/color_manager.dart';
+import '../../../../core/consts/font_manager.dart';
+import '../../../../core/utils/validators.dart';
+import '../../../../core/widgets/account_type_toggle.dart';
+import '../../../../core/widgets/custom_button.dart';
+import '../../../../core/widgets/custom_text_field.dart';
 
 class SignUpScreen extends StatefulWidget {
   final VoidCallback onGuestMode;
@@ -183,23 +183,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           SizedBox(height: 20.h),
 
-          // Full Name or Company Name
-          if (_accountType == AccountType.personal)
-            CustomTextField(
-              controller: _fullNameController,
-              label: 'Full Name',
-              hintText: 'John Doe',
-              prefixIcon: Icons.person_outline,
-              validator: Validators.validateFullName,
-            )
-          else
-            CustomTextField(
-              controller: _companyNameController,
-              label: 'Company Name',
-              hintText: 'Acme Services Pte Ltd',
-              prefixIcon: Icons.business_outlined,
-              validator: Validators.validateCompanyName,
-            ),
+          // Full Name or Company Name with smooth transition
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0.0, 0.1),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
+                ),
+              );
+            },
+            child: _accountType == AccountType.personal
+                ? CustomTextField(
+                    key: const ValueKey('personal'),
+                    controller: _fullNameController,
+                    label: 'Full Name',
+                    hintText: 'John Doe',
+                    prefixIcon: Icons.person_outline,
+                    validator: Validators.validateFullName,
+                  )
+                : CustomTextField(
+                    key: const ValueKey('services'),
+                    controller: _companyNameController,
+                    label: 'Company Name',
+                    hintText: 'Acme Services Pte Ltd',
+                    prefixIcon: Icons.business_outlined,
+                    validator: Validators.validateCompanyName,
+                  ),
+          ),
           SizedBox(height: 20.h),
 
           // Email Field
@@ -258,22 +274,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
             },
             child: Row(
               children: [
-                Icon(
-                  _showAccessCode
-                      ? Icons.keyboard_arrow_up_rounded
-                      : Icons.keyboard_arrow_down_rounded,
-                  size: 20.sp,
-                  color: ColorManager.authPrimary,
+                AnimatedRotation(
+                  turns: _showAccessCode ? 0.5 : 0,
+                  duration: const Duration(milliseconds: 300),
+                  child: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 20.sp,
+                    color: ColorManager.authPrimary,
+                  ),
                 ),
                 SizedBox(width: 8.w),
-                Text(
-                  _accountType == AccountType.personal
-                      ? 'Have a referral code?'
-                      : 'Have an access code?',
-                  style: GoogleFonts.poppins(
-                    fontSize: FontSize.s14.sp,
-                    fontWeight: FontWeightManager.medium,
-                    color: ColorManager.authPrimary,
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (Widget child, Animation<double> animation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    );
+                  },
+                  child: Text(
+                    _accountType == AccountType.personal
+                        ? 'Have a referral code?'
+                        : 'Have an access code?',
+                    key: ValueKey(_accountType),
+                    style: GoogleFonts.poppins(
+                      fontSize: FontSize.s14.sp,
+                      fontWeight: FontWeightManager.medium,
+                      color: ColorManager.authPrimary,
+                    ),
                   ),
                 ),
               ],

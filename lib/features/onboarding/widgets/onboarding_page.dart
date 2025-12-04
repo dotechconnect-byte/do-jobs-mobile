@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/consts/font_manager.dart';
-import '../models/onboarding_model.dart';
+import '../data/models/onboarding_model.dart';
 import 'animated_onboarding_icon.dart';
 
 class OnboardingPage extends StatelessWidget {

@@ -4,7 +4,8 @@
       "Bash(flutter pub upgrade:*)",
       "Bash(flutter pub:*)",
       "Bash(dir:*)",
-      "Bash(flutter analyze:*)"
+      "Bash(flutter analyze:*)",
+      "Bash(flutter:*)"
     ],
     "deny": [],
     "ask": []

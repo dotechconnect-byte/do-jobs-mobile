@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'core/consts/color_manager.dart';
-import 'features/onboarding/presentation/onboarding_screen.dart';
+import 'features/onboarding/presentation/pages/onboarding_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

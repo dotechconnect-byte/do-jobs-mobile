@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/consts/color_manager.dart';
-import '../../../core/consts/font_manager.dart';
-import '../../auth/presentation/auth_screen.dart';
-import '../models/onboarding_model.dart';
-import '../widgets/onboarding_page.dart';
+import '../../../../core/consts/color_manager.dart';
+import '../../../../core/consts/font_manager.dart';
+import '../../../auth/presentation/pages/auth_screen.dart';
+import '../../data/models/onboarding_model.dart';
+import '../../widgets/onboarding_page.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
