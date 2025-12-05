@@ -253,39 +253,6 @@ class _JobDetailScreenState extends State<JobDetailScreen>
             ),
           ),
 
-          // Scroll Down Button at bottom right
-          if (_showScrollButton)
-            Positioned(
-              bottom: 90.h,
-              right: 24.w,
-              child: GestureDetector(
-                onTap: _scrollDown,
-                child: Container(
-                  width: 56.w,
-                  height: 56.w,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF7C3AED), Color(0xFF8B5CF6)],
-                    ),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF7C3AED).withValues(alpha: 0.4),
-                        blurRadius: 16,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    size: 32.sp,
-                    color: ColorManager.white,
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );

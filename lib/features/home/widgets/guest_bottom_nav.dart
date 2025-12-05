@@ -8,12 +8,14 @@ class GuestBottomNav extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
   final VoidCallback onRestrictedTap;
+  final bool isGuest;
 
   const GuestBottomNav({
     super.key,
     required this.currentIndex,
     required this.onTap,
     required this.onRestrictedTap,
+    this.isGuest = true,
   });
 
   @override
@@ -48,32 +50,32 @@ class GuestBottomNav extends StatelessWidget {
                 label: 'Jobs',
                 index: 1,
                 isActive: currentIndex == 1,
-                onTap: onRestrictedTap,
-                isRestricted: true,
+                onTap: isGuest ? onRestrictedTap : () => onTap(1),
+                isRestricted: isGuest,
               ),
               _buildNavItem(
                 icon: Icons.chat_bubble_outline_rounded,
                 label: 'Chat',
                 index: 2,
                 isActive: currentIndex == 2,
-                onTap: onRestrictedTap,
-                isRestricted: true,
+                onTap: isGuest ? onRestrictedTap : () => onTap(2),
+                isRestricted: isGuest,
               ),
               _buildNavItem(
                 icon: Icons.account_balance_wallet_outlined,
                 label: 'Wallet',
                 index: 3,
                 isActive: currentIndex == 3,
-                onTap: onRestrictedTap,
-                isRestricted: true,
+                onTap: isGuest ? onRestrictedTap : () => onTap(3),
+                isRestricted: isGuest,
               ),
               _buildNavItem(
                 icon: Icons.person_outline_rounded,
                 label: 'Profile',
                 index: 4,
                 isActive: currentIndex == 4,
-                onTap: onRestrictedTap,
-                isRestricted: true,
+                onTap: isGuest ? onRestrictedTap : () => onTap(4),
+                isRestricted: isGuest,
               ),
             ],
           ),

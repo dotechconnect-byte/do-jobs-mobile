@@ -84,7 +84,7 @@ class _JobImageCarouselState extends State<JobImageCarousel> {
           Positioned(
             bottom: 16.h,
             left: 20.w,
-            right: 20.w,
+            right: 100.w, // Leave space for indicators
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -101,6 +101,8 @@ class _JobImageCarouselState extends State<JobImageCarousel> {
                       ),
                     ],
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 4.h),
                 Text(
@@ -116,6 +118,8 @@ class _JobImageCarouselState extends State<JobImageCarousel> {
                       ),
                     ],
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 2.h),
                 Text(
@@ -131,18 +135,19 @@ class _JobImageCarouselState extends State<JobImageCarousel> {
                       ),
                     ],
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
 
-          // Page Indicators
+          // Page Indicators at bottom right
           Positioned(
-            bottom: 70.h,
-            left: 0,
-            right: 0,
+            bottom: 24.h,
+            right: 20.w,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: List.generate(
                 widget.images.length,
                 (index) => AnimatedContainer(

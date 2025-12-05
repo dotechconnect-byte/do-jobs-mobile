@@ -6,6 +6,7 @@ import '../../../../core/consts/font_manager.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_text_field.dart';
+import '../../../home/presentation/home_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   final VoidCallback onBiometricLogin;
@@ -40,30 +41,47 @@ class _SignInScreenState extends State<SignInScreen> {
         _isLoading = true;
       });
 
-      // TODO: Implement actual sign in logic
-      await Future.delayed(const Duration(seconds: 2));
+      // Simulate authentication delay
+      await Future.delayed(const Duration(seconds: 1));
 
       setState(() {
         _isLoading = false;
       });
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Sign in successful! Navigation to be implemented.',
-              style: GoogleFonts.poppins(
-                fontSize: FontSize.s14.sp,
-                fontWeight: FontWeightManager.medium,
+      // Check credentials
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+
+      if (email == 'personal' && password == 'Pass@1234') {
+        // Successful login
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const HomeScreen(isGuest: false),
+            ),
+          );
+        }
+      } else {
+        // Failed login
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Invalid credentials. Please use username: "personal" and password: "Pass@1234"',
+                style: GoogleFonts.poppins(
+                  fontSize: FontSize.s14.sp,
+                  fontWeight: FontWeightManager.medium,
+                ),
+              ),
+              backgroundColor: const Color(0xFFEF4444),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.r),
               ),
             ),
-            backgroundColor: ColorManager.success,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-          ),
-        );
+          );
+        }
       }
     }
   }
@@ -75,14 +93,19 @@ class _SignInScreenState extends State<SignInScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Email Field
+          // Username/Email Field
           CustomTextField(
             controller: _emailController,
-            label: 'Email Address',
-            hintText: 'you@example.com',
-            prefixIcon: Icons.email_outlined,
-            keyboardType: TextInputType.emailAddress,
-            validator: Validators.validateEmail,
+            label: 'Username or Email',
+            hintText: 'Enter your username',
+            prefixIcon: Icons.person_outline_rounded,
+            keyboardType: TextInputType.text,
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Please enter your username';
+              }
+              return null;
+            },
           ),
           SizedBox(height: 20.h),
 

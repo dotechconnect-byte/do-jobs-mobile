@@ -7,12 +7,15 @@ import '../../../core/consts/font_manager.dart';
 import '../../auth/presentation/pages/auth_screen.dart';
 import '../../job_detail/data/mock_job_detail.dart';
 import '../../job_detail/presentation/pages/job_detail_screen.dart';
+import '../../schedule/presentation/my_schedule_screen.dart';
 import '../data/mock_jobs.dart';
 import '../models/job_model.dart';
+import '../widgets/available_soon_screen.dart';
 import '../widgets/category_chips.dart';
 import '../widgets/guest_bottom_nav.dart';
 import '../widgets/job_card.dart';
 import '../widgets/section_header.dart';
+import 'jobs_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool isGuest;
@@ -172,33 +175,49 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Content
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 24.h),
+              child: IndexedStack(
+                index: _currentNavIndex,
+                children: [
+                  // Home Tab (index 0)
+                  SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 24.h),
 
-                    // Location selector
-                    _buildLocationSelector(),
-                    SizedBox(height: 24.h),
+                        // Location selector
+                        _buildLocationSelector(),
+                        SizedBox(height: 24.h),
 
-                    // Search bar
-                    _buildSearchBar(),
-                    SizedBox(height: 24.h),
+                        // Search bar
+                        _buildSearchBar(),
+                        SizedBox(height: 24.h),
 
-                    // Filters
-                    _buildFilters(),
-                    SizedBox(height: 24.h),
+                        // Filters
+                        _buildFilters(),
+                        SizedBox(height: 24.h),
 
-                    // Date selector (horizontal scroll)
-                    _buildDateSelector(),
-                    SizedBox(height: 32.h),
+                        // Date selector (horizontal scroll)
+                        _buildDateSelector(),
+                        SizedBox(height: 32.h),
 
                     // 1. Hot Shifts Section
                     SectionHeader(
                       title: 'Hot Shifts',
                       icon: Icons.local_fire_department_rounded,
-                      onViewAll: () {},
+                      onViewAll: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => JobsListScreen(
+                              title: 'Hot Shifts',
+                              icon: Icons.local_fire_department_rounded,
+                              jobs: MockJobs.hotShifts,
+                              isGuest: widget.isGuest,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     SizedBox(height: 16.h),
                     _buildHorizontalJobList(MockJobs.hotShifts),
@@ -212,7 +231,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     SectionHeader(
                       title: 'AI Suggested Jobs',
                       icon: Icons.auto_awesome_rounded,
-                      onViewAll: () {},
+                      onViewAll: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => JobsListScreen(
+                              title: 'AI Suggested Jobs',
+                              icon: Icons.auto_awesome_rounded,
+                              jobs: MockJobs.aiSuggestedJobs,
+                              isGuest: widget.isGuest,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     SizedBox(height: 16.h),
                     _buildHorizontalJobList(MockJobs.aiSuggestedJobs),
@@ -231,7 +262,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       title: 'Nearby Jobs',
                       icon: Icons.location_on_rounded,
                       subtitle: 'Jobs within 2 km',
-                      onViewAll: () {},
+                      onViewAll: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => JobsListScreen(
+                              title: 'Nearby Jobs',
+                              subtitle: 'Jobs within 2 km',
+                              icon: Icons.location_on_rounded,
+                              jobs: MockJobs.nearbyJobs,
+                              isGuest: widget.isGuest,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     SizedBox(height: 16.h),
                     _buildHorizontalJobList(MockJobs.nearbyJobs),
@@ -242,29 +286,63 @@ class _HomeScreenState extends State<HomeScreen> {
                       title: 'All Jobs',
                       icon: Icons.work_outline_rounded,
                       subtitle: '${MockJobs.allJobs.length} jobs',
-                      onViewAll: () {},
+                      onViewAll: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => JobsListScreen(
+                              title: 'All Jobs',
+                              subtitle: '${MockJobs.allJobs.length} jobs',
+                              icon: Icons.work_outline_rounded,
+                              jobs: MockJobs.allJobs,
+                              isGuest: widget.isGuest,
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                    SizedBox(height: 16.h),
-                    _buildHorizontalJobList(MockJobs.allJobs),
-                    SizedBox(height: 32.h),
-                  ],
-                ),
+                        SizedBox(height: 16.h),
+                        _buildHorizontalJobList(MockJobs.allJobs),
+                        SizedBox(height: 32.h),
+                      ],
+                    ),
+                  ),
+                  // Jobs/Schedule Tab (index 1)
+                  const MyScheduleScreen(),
+                  // Chat Tab (index 2)
+                  const AvailableSoonScreen(
+                    icon: Icons.chat_bubble_outline_rounded,
+                    title: 'Chat',
+                    description: 'Connect with employers and team members in real-time. This feature is coming soon!',
+                  ),
+                  // Wallet Tab (index 3)
+                  const AvailableSoonScreen(
+                    icon: Icons.account_balance_wallet_outlined,
+                    title: 'Wallet',
+                    description: 'Manage your earnings, track payments, and view transaction history. This feature is coming soon!',
+                  ),
+                  // Profile Tab (index 4)
+                  const AvailableSoonScreen(
+                    icon: Icons.person_outline_rounded,
+                    title: 'Profile',
+                    description: 'Customize your profile, manage settings, and view your work history. This feature is coming soon!',
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: widget.isGuest
-          ? GuestBottomNav(
-              currentIndex: _currentNavIndex,
-              onTap: (index) {
-                setState(() {
-                  _currentNavIndex = index;
-                });
-              },
-              onRestrictedTap: _handleRestrictedAccess,
-            )
-          : null,
+      bottomNavigationBar: GuestBottomNav(
+        currentIndex: _currentNavIndex,
+        onTap: (index) {
+          setState(() {
+            _currentNavIndex = index;
+          });
+        },
+        onRestrictedTap: _handleRestrictedAccess,
+        isGuest: widget.isGuest,
+      ),
     );
   }
 
