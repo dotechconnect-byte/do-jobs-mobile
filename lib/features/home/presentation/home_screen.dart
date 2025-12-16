@@ -36,16 +36,40 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentBannerPage = 0;
   Timer? _bannerTimer;
 
+  // Scroll controllers for job lists
+  final ScrollController _hotShiftsController = ScrollController();
+  final ScrollController _aiSuggestedController = ScrollController();
+  final ScrollController _nearbyJobsController = ScrollController();
+  final ScrollController _allJobsController = ScrollController();
+
+  // Timers for job lists
+  Timer? _hotShiftsTimer;
+  Timer? _aiSuggestedTimer;
+  Timer? _nearbyJobsTimer;
+  Timer? _allJobsTimer;
+
   @override
   void initState() {
     super.initState();
     _startAutoScroll();
+    _startJobListAutoScroll();
   }
 
   @override
   void dispose() {
     _bannerTimer?.cancel();
     _bannerPageController.dispose();
+
+    // Dispose job list timers and controllers
+    _hotShiftsTimer?.cancel();
+    _aiSuggestedTimer?.cancel();
+    _nearbyJobsTimer?.cancel();
+    _allJobsTimer?.cancel();
+    _hotShiftsController.dispose();
+    _aiSuggestedController.dispose();
+    _nearbyJobsController.dispose();
+    _allJobsController.dispose();
+
     super.dispose();
   }
 
@@ -60,6 +84,67 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }
     });
+  }
+
+  void _startJobListAutoScroll() {
+    // Auto-scroll for Hot Shifts every 2.5 seconds
+    _hotShiftsTimer = Timer.periodic(const Duration(milliseconds: 2500), (timer) {
+      _autoScrollList(_hotShiftsController);
+    });
+
+    // Auto-scroll for AI Suggested every 3 seconds
+    _aiSuggestedTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      _autoScrollList(_aiSuggestedController);
+    });
+
+    // Auto-scroll for Nearby Jobs every 3.5 seconds
+    _nearbyJobsTimer = Timer.periodic(const Duration(milliseconds: 3500), (timer) {
+      _autoScrollList(_nearbyJobsController);
+    });
+
+    // Auto-scroll for All Jobs every 4 seconds
+    _allJobsTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      _autoScrollList(_allJobsController);
+    });
+  }
+
+  void _autoScrollList(ScrollController controller) {
+    if (!controller.hasClients) return;
+
+    final maxScroll = controller.position.maxScrollExtent;
+    final currentScroll = controller.offset;
+
+    // If we're at the beginning or in the middle, scroll forward
+    if (currentScroll < maxScroll) {
+      final cardWidth = 280.w + 16.w; // Card width + separator
+      double nextScroll = currentScroll + cardWidth;
+
+      // If next scroll would exceed max, scroll to max
+      if (nextScroll >= maxScroll) {
+        controller.animateTo(
+          maxScroll,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeInOut,
+        ).then((_) {
+          // After reaching the end, wait 1 second then scroll back to start
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            if (controller.hasClients) {
+              controller.animateTo(
+                0,
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.easeInOut,
+              );
+            }
+          });
+        });
+      } else {
+        controller.animateTo(
+          nextScroll,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeInOut,
+        );
+      }
+    }
   }
 
   void _handleRestrictedAccess() {
@@ -220,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                     SizedBox(height: 16.h),
-                    _buildHorizontalJobList(MockJobs.hotShifts),
+                    _buildHorizontalJobList(MockJobs.hotShifts, _hotShiftsController),
                     SizedBox(height: 32.h),
 
                     // Banner
@@ -246,7 +331,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                     SizedBox(height: 16.h),
-                    _buildHorizontalJobList(MockJobs.aiSuggestedJobs),
+                    _buildHorizontalJobList(MockJobs.aiSuggestedJobs, _aiSuggestedController),
                     SizedBox(height: 32.h),
 
                     // Category chips
@@ -278,7 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                     SizedBox(height: 16.h),
-                    _buildHorizontalJobList(MockJobs.nearbyJobs),
+                    _buildHorizontalJobList(MockJobs.nearbyJobs, _nearbyJobsController),
                     SizedBox(height: 32.h),
 
                     // 4. All Jobs Section
@@ -302,7 +387,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                         SizedBox(height: 16.h),
-                        _buildHorizontalJobList(MockJobs.allJobs),
+                        _buildHorizontalJobList(MockJobs.allJobs, _allJobsController),
                         SizedBox(height: 32.h),
                       ],
                     ),
@@ -761,10 +846,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHorizontalJobList(List<JobModel> jobs) {
+  Widget _buildHorizontalJobList(List<JobModel> jobs, ScrollController controller) {
     return SizedBox(
       height: 270.h,
       child: ListView.separated(
+        controller: controller,
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 24.w),
         itemCount: jobs.length,

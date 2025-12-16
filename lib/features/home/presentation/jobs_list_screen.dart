@@ -226,9 +226,9 @@ class _JobsListScreenState extends State<JobsListScreen> {
               ),
             )
           : ListView.separated(
-              padding: EdgeInsets.all(24.w),
+              padding: EdgeInsets.all(16.w),
               itemCount: widget.jobs.length,
-              separatorBuilder: (context, index) => SizedBox(height: 16.h),
+              separatorBuilder: (context, index) => SizedBox(height: 12.h),
               itemBuilder: (context, index) {
                 return _buildJobCard(widget.jobs[index]);
               },
@@ -266,7 +266,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
           children: [
             // Image section
             Container(
-              height: 160.h,
+              height: 100.h,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
@@ -286,14 +286,14 @@ class _JobsListScreenState extends State<JobsListScreen> {
                   Center(
                     child: Icon(
                       Icons.work_outline_rounded,
-                      size: 60.sp,
+                      size: 40.sp,
                       color: Colors.white.withValues(alpha: 0.3),
                     ),
                   ),
                   // Bookmark button
                   Positioned(
-                    top: 12.h,
-                    right: 12.w,
+                    top: 8.h,
+                    right: 8.w,
                     child: GestureDetector(
                       onTap: widget.isGuest
                           ? _handleRestrictedAccess
@@ -301,21 +301,21 @@ class _JobsListScreenState extends State<JobsListScreen> {
                               // Handle bookmark for logged-in users
                             },
                       child: Container(
-                        width: 36.w,
-                        height: 36.w,
+                        width: 28.w,
+                        height: 28.w,
                         decoration: BoxDecoration(
                           color: ColorManager.white,
-                          borderRadius: BorderRadius.circular(8.r),
+                          borderRadius: BorderRadius.circular(6.r),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.1),
-                              blurRadius: 8,
+                              blurRadius: 6,
                             ),
                           ],
                         ),
                         child: Icon(
                           Icons.bookmark_outline,
-                          size: 18.sp,
+                          size: 16.sp,
                           color: ColorManager.textPrimary,
                         ),
                       ),
@@ -324,12 +324,12 @@ class _JobsListScreenState extends State<JobsListScreen> {
                   // Badge
                   if (job.isHotShift || job.isAISuggested)
                     Positioned(
-                      top: 12.h,
-                      left: 12.w,
+                      top: 8.h,
+                      left: 8.w,
                       child: Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 8.w,
-                          vertical: 4.h,
+                          horizontal: 6.w,
+                          vertical: 3.h,
                         ),
                         decoration: BoxDecoration(
                           color: job.isHotShift
@@ -344,10 +344,10 @@ class _JobsListScreenState extends State<JobsListScreen> {
                               job.isHotShift
                                   ? Icons.local_fire_department_rounded
                                   : Icons.auto_awesome_rounded,
-                              size: 12.sp,
+                              size: 10.sp,
                               color: ColorManager.white,
                             ),
-                            SizedBox(width: 4.w),
+                            SizedBox(width: 3.w),
                             Text(
                               job.isHotShift ? 'Hot' : 'AI Pick',
                               style: GoogleFonts.poppins(
@@ -365,7 +365,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
             ),
             // Content section
             Padding(
-              padding: EdgeInsets.all(16.w),
+              padding: EdgeInsets.all(12.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -373,32 +373,32 @@ class _JobsListScreenState extends State<JobsListScreen> {
                   Text(
                     job.title,
                     style: GoogleFonts.poppins(
-                      fontSize: FontSize.s16.sp,
+                      fontSize: FontSize.s14.sp,
                       fontWeight: FontWeightManager.bold,
                       color: ColorManager.textPrimary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: 4.h),
+                  SizedBox(height: 2.h),
                   Text(
                     job.company,
                     style: GoogleFonts.poppins(
-                      fontSize: FontSize.s14.sp,
+                      fontSize: FontSize.s12.sp,
                       fontWeight: FontWeightManager.medium,
                       color: ColorManager.textSecondary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: 12.h),
+                  SizedBox(height: 8.h),
 
                   // Location and distance
                   Row(
                     children: [
                       Icon(
                         Icons.location_on_outlined,
-                        size: 16.sp,
+                        size: 14.sp,
                         color: ColorManager.textSecondary,
                       ),
                       SizedBox(width: 4.w),
@@ -406,7 +406,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                         child: Text(
                           job.location,
                           style: GoogleFonts.poppins(
-                            fontSize: FontSize.s12.sp,
+                            fontSize: FontSize.s11.sp,
                             fontWeight: FontWeightManager.regular,
                             color: ColorManager.textSecondary,
                           ),
@@ -418,7 +418,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                         Text(
                           '${job.distance.toStringAsFixed(1)} km',
                           style: GoogleFonts.poppins(
-                            fontSize: FontSize.s12.sp,
+                            fontSize: FontSize.s11.sp,
                             fontWeight: FontWeightManager.medium,
                             color: ColorManager.authPrimary,
                           ),
@@ -426,50 +426,50 @@ class _JobsListScreenState extends State<JobsListScreen> {
                       ],
                     ],
                   ),
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 6.h),
 
                   // Date and time
                   Row(
                     children: [
                       Icon(
                         Icons.calendar_today_rounded,
-                        size: 16.sp,
+                        size: 14.sp,
                         color: ColorManager.textSecondary,
                       ),
                       SizedBox(width: 4.w),
                       Text(
                         _formatDate(job.date),
                         style: GoogleFonts.poppins(
-                          fontSize: FontSize.s12.sp,
+                          fontSize: FontSize.s11.sp,
                           fontWeight: FontWeightManager.regular,
                           color: ColorManager.textSecondary,
                         ),
                       ),
-                      SizedBox(width: 12.w),
+                      SizedBox(width: 8.w),
                       Icon(
                         Icons.access_time_rounded,
-                        size: 16.sp,
+                        size: 14.sp,
                         color: ColorManager.textSecondary,
                       ),
                       SizedBox(width: 4.w),
                       Text(
                         '${job.startTime} - ${job.endTime}',
                         style: GoogleFonts.poppins(
-                          fontSize: FontSize.s12.sp,
+                          fontSize: FontSize.s11.sp,
                           fontWeight: FontWeightManager.regular,
                           color: ColorManager.textSecondary,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 10.h),
 
                   // Divider
                   Container(
                     height: 1,
                     color: ColorManager.grey4,
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 10.h),
 
                   // Bottom row
                   Row(
@@ -482,7 +482,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                             Text(
                               'Hourly Rate',
                               style: GoogleFonts.poppins(
-                                fontSize: FontSize.s11.sp,
+                                fontSize: FontSize.s10.sp,
                                 fontWeight: FontWeightManager.regular,
                                 color: ColorManager.textSecondary,
                               ),
@@ -491,7 +491,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                             Text(
                               '\$${job.hourlyRate.toStringAsFixed(2)}/hr',
                               style: GoogleFonts.poppins(
-                                fontSize: FontSize.s16.sp,
+                                fontSize: FontSize.s14.sp,
                                 fontWeight: FontWeightManager.bold,
                                 color: ColorManager.authPrimary,
                               ),
@@ -508,7 +508,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                             Text(
                               'Expected',
                               style: GoogleFonts.poppins(
-                                fontSize: FontSize.s11.sp,
+                                fontSize: FontSize.s10.sp,
                                 fontWeight: FontWeightManager.regular,
                                 color: ColorManager.textSecondary,
                               ),
@@ -517,7 +517,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                             Text(
                               '\$${job.expectedEarnings.toStringAsFixed(0)}',
                               style: GoogleFonts.poppins(
-                                fontSize: FontSize.s16.sp,
+                                fontSize: FontSize.s14.sp,
                                 fontWeight: FontWeightManager.bold,
                                 color: ColorManager.textPrimary,
                               ),
@@ -529,30 +529,30 @@ class _JobsListScreenState extends State<JobsListScreen> {
                       // Spots left
                       Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 12.w,
-                          vertical: 6.h,
+                          horizontal: 8.w,
+                          vertical: 4.h,
                         ),
                         decoration: BoxDecoration(
                           color: job.spotsLeft <= 3
                               ? const Color(0xFFFEF2F2)
                               : ColorManager.authSurface,
-                          borderRadius: BorderRadius.circular(8.r),
+                          borderRadius: BorderRadius.circular(6.r),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
                               Icons.people_outline_rounded,
-                              size: 16.sp,
+                              size: 14.sp,
                               color: job.spotsLeft <= 3
                                   ? const Color(0xFFEF4444)
                                   : ColorManager.authPrimary,
                             ),
-                            SizedBox(width: 4.w),
+                            SizedBox(width: 3.w),
                             Text(
                               '${job.spotsLeft} left',
                               style: GoogleFonts.poppins(
-                                fontSize: FontSize.s12.sp,
+                                fontSize: FontSize.s11.sp,
                                 fontWeight: FontWeightManager.semiBold,
                                 color: job.spotsLeft <= 3
                                     ? const Color(0xFFEF4444)

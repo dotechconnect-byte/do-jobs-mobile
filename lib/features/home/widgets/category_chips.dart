@@ -23,28 +23,29 @@ class CategoryChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 64.w,
-            height: 64.w,
+            width: 48.w,
+            height: 48.w,
             decoration: BoxDecoration(
               color: color,
-              borderRadius: BorderRadius.circular(16.r),
+              borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
                   color: color.withValues(alpha: 0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
             child: Icon(
               icon,
-              size: 28.sp,
+              size: 22.sp,
               color: Colors.white,
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 6.h),
           Text(
             label,
             style: GoogleFonts.poppins(
@@ -52,6 +53,9 @@ class CategoryChip extends StatelessWidget {
               fontWeight: FontWeightManager.medium,
               color: ColorManager.textPrimary,
             ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -82,13 +86,18 @@ class CategoryChipsRow extends StatelessWidget {
       {'label': 'Regular', 'icon': Icons.schedule, 'color': const Color(0xFF8B5CF6)},
     ];
 
-    return SizedBox(
-      height: 90.h,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(horizontal: 24.w),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24.w),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 5,
+          crossAxisSpacing: 12.w,
+          mainAxisSpacing: 12.h,
+          childAspectRatio: 0.8,
+        ),
         itemCount: categories.length,
-        separatorBuilder: (context, index) => SizedBox(width: 16.w),
         itemBuilder: (context, index) {
           final category = categories[index];
           return CategoryChip(
