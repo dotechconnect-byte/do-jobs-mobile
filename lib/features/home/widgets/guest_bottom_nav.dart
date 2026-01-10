@@ -20,12 +20,14 @@ class GuestBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: ColorManager.white,
+        color: isDark ? ColorManager.darkCard : ColorManager.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.06),
             blurRadius: 12,
             offset: const Offset(0, -4),
           ),
@@ -38,6 +40,7 @@ class GuestBottomNav extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(
+                context: context,
                 icon: Icons.home_rounded,
                 label: 'Home',
                 index: 0,
@@ -46,6 +49,7 @@ class GuestBottomNav extends StatelessWidget {
                 isRestricted: false,
               ),
               _buildNavItem(
+                context: context,
                 icon: Icons.work_outline_rounded,
                 label: 'Jobs',
                 index: 1,
@@ -54,6 +58,7 @@ class GuestBottomNav extends StatelessWidget {
                 isRestricted: isGuest,
               ),
               _buildNavItem(
+                context: context,
                 icon: Icons.chat_bubble_outline_rounded,
                 label: 'Chat',
                 index: 2,
@@ -62,6 +67,7 @@ class GuestBottomNav extends StatelessWidget {
                 isRestricted: isGuest,
               ),
               _buildNavItem(
+                context: context,
                 icon: Icons.account_balance_wallet_outlined,
                 label: 'Wallet',
                 index: 3,
@@ -70,6 +76,7 @@ class GuestBottomNav extends StatelessWidget {
                 isRestricted: isGuest,
               ),
               _buildNavItem(
+                context: context,
                 icon: Icons.person_outline_rounded,
                 label: 'Profile',
                 index: 4,
@@ -85,6 +92,7 @@ class GuestBottomNav extends StatelessWidget {
   }
 
   Widget _buildNavItem({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required int index,
@@ -92,6 +100,8 @@ class GuestBottomNav extends StatelessWidget {
     required VoidCallback onTap,
     required bool isRestricted,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
       child: Stack(
@@ -117,7 +127,7 @@ class GuestBottomNav extends StatelessWidget {
                   size: 24.sp,
                   color: isActive
                       ? ColorManager.white
-                      : ColorManager.textTertiary,
+                      : (isDark ? ColorManager.darkTextSecondary : ColorManager.textTertiary),
                 ),
                 SizedBox(height: 4.h),
                 Text(
@@ -129,7 +139,7 @@ class GuestBottomNav extends StatelessWidget {
                         : FontWeightManager.regular,
                     color: isActive
                         ? ColorManager.white
-                        : ColorManager.textTertiary,
+                        : (isDark ? ColorManager.darkTextSecondary : ColorManager.textTertiary),
                   ),
                 ),
               ],

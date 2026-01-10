@@ -99,4 +99,16 @@ class ColorManager {
   // Auth Secondary Actions
   static const Color authSecondary = Color(0xFFF3F4F6); // Light grey for inactive states
   static const Color authSecondaryText = Color(0xFF6B7280); // Grey text
+
+  // Dark Theme Colors
+  static const Color darkBackground = Color(0xFF121212);
+  static const Color darkSurface = Color(0xFF1E1E1E);
+  static const Color darkCard = Color(0xFF2C2C2C);
+  static const Color darkInput = Color(0xFF2C2C2C);
+  static const Color darkBorder = Color(0xFF3C3C3C);
+
+  // Dark Text Colors
+  static const Color darkTextPrimary = Color(0xFFFFFFFF);
+  static const Color darkTextSecondary = Color(0xFFB3B3B3);
+  static const Color darkTextTertiary = Color(0xFF808080);
 }

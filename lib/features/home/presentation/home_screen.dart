@@ -8,6 +8,7 @@ import '../../auth/presentation/pages/auth_screen.dart';
 import '../../job_detail/data/mock_job_detail.dart';
 import '../../job_detail/presentation/pages/job_detail_screen.dart';
 import '../../schedule/presentation/my_schedule_screen.dart';
+import '../../profile/presentation/profile_screen.dart';
 import '../data/mock_jobs.dart';
 import '../models/job_model.dart';
 import '../widgets/available_soon_screen.dart';
@@ -250,13 +251,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: ColorManager.authBackground,
+      backgroundColor: isDark ? ColorManager.darkBackground : ColorManager.backgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             // Header
-            _buildHeader(),
+            _buildHeader(isDark),
 
             // Content
             Expanded(
@@ -407,11 +410,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     description: 'Manage your earnings, track payments, and view transaction history. This feature is coming soon!',
                   ),
                   // Profile Tab (index 4)
-                  const AvailableSoonScreen(
-                    icon: Icons.person_outline_rounded,
-                    title: 'Profile',
-                    description: 'Customize your profile, manage settings, and view your work history. This feature is coming soon!',
-                  ),
+                  const ProfileScreen(),
                 ],
               ),
             ),
@@ -431,11 +430,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(bool isDark) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
       decoration: BoxDecoration(
-        color: ColorManager.white,
+        color: isDark ? ColorManager.darkCard : ColorManager.white,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -475,7 +474,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: GoogleFonts.poppins(
               fontSize: FontSize.s20.sp,
               fontWeight: FontWeightManager.bold,
-              color: ColorManager.textPrimary,
+              color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
             ),
           ),
           const Spacer(),
@@ -511,7 +510,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: GoogleFonts.poppins(
                       fontSize: FontSize.s12.sp,
                       fontWeight: FontWeightManager.bold,
-                      color: ColorManager.textPrimary,
+                      color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                     ),
                   ),
                 ],
@@ -525,7 +524,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(
               Icons.notifications_outlined,
               size: 24.sp,
-              color: ColorManager.textPrimary,
+              color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
             ),
           ),
         ],

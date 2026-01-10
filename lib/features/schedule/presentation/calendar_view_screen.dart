@@ -14,7 +14,6 @@ class CalendarViewScreen extends StatefulWidget {
 
 class _CalendarViewScreenState extends State<CalendarViewScreen> {
   DateTime _focusedMonth = DateTime.now();
-  DateTime? _selectedDay;
 
   @override
   Widget build(BuildContext context) {
@@ -380,15 +379,11 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
         : null;
 
     final isToday = _isSameDay(date, DateTime.now());
-    final isSelected = _selectedDay != null && _isSameDay(date, _selectedDay!);
 
     // If there's a scheduled job, show it in an indigo card
     if (hasScheduled && scheduledEvent != null) {
       return GestureDetector(
         onTap: () {
-          setState(() {
-            _selectedDay = date;
-          });
           _showDayEventsDialog(date);
         },
         child: Container(
@@ -505,12 +500,71 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
       );
     }
 
+    // Available day cell (matches web design)
+    if (hasAvailability) {
+      return GestureDetector(
+        onTap: () {
+          _showDayEventsDialog(date);
+        },
+        child: Container(
+          height: 90.h,
+          margin: EdgeInsets.all(3.w),
+          decoration: BoxDecoration(
+            color: const Color(0xFF10B981),
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(8.w),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Day number
+                Text(
+                  '$dayNumber',
+                  style: GoogleFonts.poppins(
+                    fontSize: FontSize.s22.sp,
+                    fontWeight: FontWeightManager.bold,
+                    color: ColorManager.white,
+                  ),
+                ),
+                SizedBox(height: 6.h),
+                // Dots indicator
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    4,
+                    (index) => Container(
+                      width: 4.w,
+                      height: 4.w,
+                      margin: EdgeInsets.symmetric(horizontal: 2.w),
+                      decoration: BoxDecoration(
+                        color: ColorManager.white,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 6.h),
+                // Hours available
+                Text(
+                  '7h available',
+                  style: GoogleFonts.poppins(
+                    fontSize: 9.sp,
+                    fontWeight: FontWeightManager.medium,
+                    color: ColorManager.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     // Regular date cell
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _selectedDay = date;
-        });
         if (events.isEmpty) {
           _showMarkAvailabilityDialog(date);
         } else {
@@ -521,102 +575,29 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
         height: 90.h,
         margin: EdgeInsets.all(3.w),
         decoration: BoxDecoration(
-          gradient: hasAvailability
-              ? LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    const Color(0xFF10B981).withValues(alpha: 0.15),
-                    const Color(0xFF059669).withValues(alpha: 0.1),
-                  ],
+          color: isToday
+              ? ColorManager.authPrimary.withValues(alpha: 0.1)
+              : const Color(0xFFF5F3FF),
+          borderRadius: BorderRadius.circular(12.r),
+          border: isToday
+              ? Border.all(
+                  color: ColorManager.authPrimary,
+                  width: 2,
                 )
-              : isToday
-                  ? LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        ColorManager.authPrimary.withValues(alpha: 0.15),
-                        ColorManager.authPrimary.withValues(alpha: 0.08),
-                      ],
-                    )
-                  : null,
-          color: hasAvailability || isToday ? null : const Color(0xFFFAFAFA),
-          borderRadius: BorderRadius.circular(14.r),
-          border: Border.all(
-            color: hasAvailability
-                ? const Color(0xFF10B981)
-                : isToday
-                    ? ColorManager.authPrimary
-                    : const Color(0xFFE5E7EB),
-            width: hasAvailability || isToday ? 2 : 1.5,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: ColorManager.authPrimary.withValues(alpha: 0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
               : null,
         ),
-        child: Padding(
-          padding: EdgeInsets.all(8.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '$dayNumber',
-                    style: GoogleFonts.poppins(
-                      fontSize: FontSize.s16.sp,
-                      fontWeight: isToday || hasAvailability
-                          ? FontWeightManager.bold
-                          : FontWeightManager.semiBold,
-                      color: isToday
-                          ? ColorManager.authPrimary
-                          : hasAvailability
-                              ? const Color(0xFF059669)
-                              : ColorManager.textPrimary,
-                    ),
-                  ),
-                  if (hasAvailability)
-                    Container(
-                      padding: EdgeInsets.all(4.w),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF10B981),
-                        borderRadius: BorderRadius.circular(6.r),
-                      ),
-                      child: Icon(
-                        Icons.check,
-                        size: 12.sp,
-                        color: ColorManager.white,
-                      ),
-                    ),
-                ],
-              ),
-              if (isToday && !hasAvailability)
-                Padding(
-                  padding: EdgeInsets.only(top: 4.h),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-                    decoration: BoxDecoration(
-                      color: ColorManager.authPrimary,
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                    child: Text(
-                      'Today',
-                      style: GoogleFonts.poppins(
-                        fontSize: 8.sp,
-                        fontWeight: FontWeightManager.semiBold,
-                        color: ColorManager.white,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
+        child: Center(
+          child: Text(
+            '$dayNumber',
+            style: GoogleFonts.poppins(
+              fontSize: FontSize.s18.sp,
+              fontWeight: isToday
+                  ? FontWeightManager.bold
+                  : FontWeightManager.semiBold,
+              color: isToday
+                  ? ColorManager.authPrimary
+                  : ColorManager.textPrimary,
+            ),
           ),
         ),
       ),
@@ -811,76 +792,8 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
   void _showMarkAvailabilityDialog(DateTime date) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: ColorManager.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.r),
-        ),
-        title: Text(
-          'Mark Availability',
-          style: GoogleFonts.poppins(
-            fontSize: FontSize.s18.sp,
-            fontWeight: FontWeightManager.bold,
-            color: ColorManager.textPrimary,
-          ),
-        ),
-        content: Text(
-          'Would you like to mark yourself as available on ${_getMonthAbbr(date.month)} ${date.day}, ${date.year}?',
-          style: GoogleFonts.poppins(
-            fontSize: FontSize.s14.sp,
-            fontWeight: FontWeightManager.regular,
-            color: ColorManager.textSecondary,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: GoogleFonts.poppins(
-                fontSize: FontSize.s14.sp,
-                fontWeight: FontWeightManager.semiBold,
-                color: ColorManager.textSecondary,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Availability marked for ${_getMonthAbbr(date.month)} ${date.day}',
-                    style: GoogleFonts.poppins(
-                      fontSize: FontSize.s14.sp,
-                      fontWeight: FontWeightManager.medium,
-                    ),
-                  ),
-                  backgroundColor: const Color(0xFF10B981),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF10B981),
-              foregroundColor: ColorManager.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-            ),
-            child: Text(
-              'Mark Available',
-              style: GoogleFonts.poppins(
-                fontSize: FontSize.s14.sp,
-                fontWeight: FontWeightManager.semiBold,
-              ),
-            ),
-          ),
-        ],
-      ),
+      barrierDismissible: false,
+      builder: (context) => _SetAvailabilityDialog(date: date),
     );
   }
 
@@ -908,6 +821,257 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
       'Oct',
       'Nov',
       'Dec'
+    ];
+    return months[month - 1];
+  }
+}
+
+// Set Availability Dialog Widget
+class _SetAvailabilityDialog extends StatefulWidget {
+  final DateTime date;
+
+  const _SetAvailabilityDialog({required this.date});
+
+  @override
+  State<_SetAvailabilityDialog> createState() => _SetAvailabilityDialogState();
+}
+
+class _SetAvailabilityDialogState extends State<_SetAvailabilityDialog> {
+  final Set<String> _selectedShifts = {};
+
+  final List<Map<String, String>> _shifts = [
+    {'name': 'Early Morning Shift', 'time': '6 AM - 5 PM'},
+    {'name': 'Morning Shift', 'time': '10 AM - 6 PM'},
+    {'name': 'Evening Shift', 'time': '5 PM - 12 AM (next day)'},
+    {'name': 'Late Night Shift', 'time': '5 PM - 4 AM'},
+    {'name': 'Full Day', 'time': '12 AM - 12 AM'},
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? ColorManager.darkSurface : ColorManager.white;
+    final textColor = isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary;
+    final secondaryTextColor = isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary;
+
+    return Dialog(
+      backgroundColor: bgColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      child: Container(
+        constraints: BoxConstraints(maxHeight: 550.h),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(20.w),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Set Availability',
+                            style: GoogleFonts.poppins(
+                              fontSize: FontSize.s18.sp,
+                              fontWeight: FontWeightManager.bold,
+                              color: textColor,
+                            ),
+                          ),
+                          SizedBox(height: 2.h),
+                          Text(
+                            'Select preset shifts or individual hours for ${_getMonthName(widget.date.month)} ${widget.date.day}, ${widget.date.year}',
+                            style: GoogleFonts.poppins(
+                              fontSize: FontSize.s11.sp,
+                              fontWeight: FontWeightManager.regular,
+                              color: secondaryTextColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(Icons.close, color: secondaryTextColor),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 18.h),
+
+                // Quick Select Shifts Section
+                Text(
+                  'Quick Select Shifts (click multiple to combine)',
+                  style: GoogleFonts.poppins(
+                    fontSize: FontSize.s11.sp,
+                    fontWeight: FontWeightManager.semiBold,
+                    color: ColorManager.authPrimary,
+                  ),
+                ),
+
+                SizedBox(height: 10.h),
+
+                // Shift Buttons in Grid
+                ...List.generate((_shifts.length / 2).ceil(), (rowIndex) {
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: 8.h),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _buildShiftButton(
+                            _shifts[rowIndex * 2],
+                            isDark,
+                            textColor,
+                            secondaryTextColor,
+                          ),
+                        ),
+                        if (rowIndex * 2 + 1 < _shifts.length) ...[
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: _buildShiftButton(
+                              _shifts[rowIndex * 2 + 1],
+                              isDark,
+                              textColor,
+                              secondaryTextColor,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  );
+                }),
+
+                SizedBox(height: 16.h),
+
+                // Confirm Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Availability marked successfully!',
+                            style: GoogleFonts.poppins(
+                              fontSize: FontSize.s14.sp,
+                              fontWeight: FontWeightManager.medium,
+                            ),
+                          ),
+                          backgroundColor: const Color(0xFF10B981),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorManager.authPrimary,
+                      foregroundColor: ColorManager.white,
+                      padding: EdgeInsets.symmetric(vertical: 16.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.check_circle, size: 20.sp),
+                        SizedBox(width: 8.w),
+                        Text(
+                          'Confirm',
+                          style: GoogleFonts.poppins(
+                            fontSize: FontSize.s16.sp,
+                            fontWeight: FontWeightManager.semiBold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShiftButton(
+    Map<String, String> shift,
+    bool isDark,
+    Color textColor,
+    Color secondaryTextColor,
+  ) {
+    final isSelected = _selectedShifts.contains(shift['name']);
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (isSelected) {
+            _selectedShifts.remove(shift['name']);
+          } else {
+            _selectedShifts.add(shift['name']!);
+          }
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? ColorManager.authPrimary.withValues(alpha: 0.1)
+              : (isDark ? ColorManager.darkInput : const Color(0xFFF5F3FF)),
+          border: Border.all(
+            color: isSelected
+                ? ColorManager.authPrimary
+                : (isDark ? ColorManager.darkBorder : const Color(0xFFE9D5FF)),
+            width: isSelected ? 2 : 1,
+          ),
+          borderRadius: BorderRadius.circular(10.r),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              shift['name']!,
+              style: GoogleFonts.poppins(
+                fontSize: FontSize.s12.sp,
+                fontWeight: FontWeightManager.semiBold,
+                color: isSelected ? ColorManager.authPrimary : textColor,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            SizedBox(height: 2.h),
+            Text(
+              shift['time']!,
+              style: GoogleFonts.poppins(
+                fontSize: FontSize.s10.sp,
+                fontWeight: FontWeightManager.regular,
+                color: secondaryTextColor,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
     return months[month - 1];
   }

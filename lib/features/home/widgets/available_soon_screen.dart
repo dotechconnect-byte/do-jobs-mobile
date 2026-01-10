@@ -18,6 +18,8 @@ class AvailableSoonScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Center(
       child: Padding(
         padding: EdgeInsets.all(32.w),
@@ -60,7 +62,7 @@ class AvailableSoonScreen extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: FontSize.s24.sp,
                 fontWeight: FontWeightManager.bold,
-                color: ColorManager.textPrimary,
+                color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -100,7 +102,7 @@ class AvailableSoonScreen extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: FontSize.s16.sp,
                 fontWeight: FontWeightManager.regular,
-                color: ColorManager.textSecondary,
+                color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
