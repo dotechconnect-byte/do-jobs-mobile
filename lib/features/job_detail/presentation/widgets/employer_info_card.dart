@@ -26,13 +26,25 @@ class EmployerInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: ColorManager.white,
+        gradient: isDark
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  ColorManager.authPrimary.withValues(alpha: 0.15),
+                  ColorManager.authPrimaryDark.withValues(alpha: 0.1),
+                ],
+              )
+            : null,
+        color: isDark ? null : ColorManager.white,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: ColorManager.grey4,
+          color: isDark ? ColorManager.authPrimary.withValues(alpha: 0.3) : ColorManager.grey4,
           width: 1,
         ),
       ),
@@ -67,7 +79,7 @@ class EmployerInfoCard extends StatelessWidget {
                             style: GoogleFonts.poppins(
                               fontSize: FontSize.s16.sp,
                               fontWeight: FontWeightManager.bold,
-                              color: ColorManager.textPrimary,
+                              color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                             ),
                           ),
                         ),
@@ -108,7 +120,7 @@ class EmployerInfoCard extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: FontSize.s12.sp,
                         fontWeight: FontWeightManager.regular,
-                        color: ColorManager.textSecondary,
+                        color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                       ),
                     ),
                   ],
@@ -121,6 +133,7 @@ class EmployerInfoCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildStat(
+                context,
                 Icons.people_outline,
                 employeeCount,
                 'Employees',
@@ -129,9 +142,10 @@ class EmployerInfoCard extends StatelessWidget {
               Container(
                 width: 1,
                 height: 40.h,
-                color: ColorManager.grey4,
+                color: isDark ? ColorManager.darkBorder : ColorManager.grey4,
               ),
               _buildStat(
+                context,
                 Icons.work_outline,
                 '$openRoles',
                 'Open Roles',
@@ -140,9 +154,10 @@ class EmployerInfoCard extends StatelessWidget {
               Container(
                 width: 1,
                 height: 40.h,
-                color: ColorManager.grey4,
+                color: isDark ? ColorManager.darkBorder : ColorManager.grey4,
               ),
               _buildStat(
+                context,
                 Icons.star_outline,
                 '$rating★',
                 'Rating',
@@ -156,7 +171,7 @@ class EmployerInfoCard extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: FontSize.s14.sp,
               fontWeight: FontWeightManager.regular,
-              color: ColorManager.textSecondary,
+              color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
               height: 1.5,
             ),
           ),
@@ -165,7 +180,9 @@ class EmployerInfoCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStat(IconData icon, String value, String label, Color color) {
+  Widget _buildStat(BuildContext context, IconData icon, String value, String label, Color color) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       children: [
         Icon(
@@ -179,7 +196,7 @@ class EmployerInfoCard extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: FontSize.s16.sp,
             fontWeight: FontWeightManager.bold,
-            color: ColorManager.textPrimary,
+            color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
           ),
         ),
         Text(
@@ -187,7 +204,7 @@ class EmployerInfoCard extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: FontSize.s12.sp,
             fontWeight: FontWeightManager.regular,
-            color: ColorManager.textSecondary,
+            color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
           ),
         ),
       ],

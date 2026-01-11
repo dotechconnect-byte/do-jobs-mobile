@@ -14,13 +14,25 @@ class BenefitsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: ColorManager.white,
+        gradient: isDark
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  ColorManager.authPrimary.withValues(alpha: 0.15),
+                  ColorManager.authPrimaryDark.withValues(alpha: 0.1),
+                ],
+              )
+            : null,
+        color: isDark ? null : ColorManager.white,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: ColorManager.grey4,
+          color: isDark ? ColorManager.authPrimary.withValues(alpha: 0.3) : ColorManager.grey4,
           width: 1,
         ),
       ),
@@ -40,7 +52,7 @@ class BenefitsSection extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: FontSize.s16.sp,
                   fontWeight: FontWeightManager.bold,
-                  color: ColorManager.textPrimary,
+                  color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                 ),
               ),
             ],
@@ -72,7 +84,7 @@ class BenefitsSection extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           fontSize: FontSize.s14.sp,
                           fontWeight: FontWeightManager.regular,
-                          color: ColorManager.textSecondary,
+                          color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                           height: 1.5,
                         ),
                       ),

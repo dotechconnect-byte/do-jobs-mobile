@@ -9,6 +9,7 @@ import '../../job_detail/data/mock_job_detail.dart';
 import '../../job_detail/presentation/pages/job_detail_screen.dart';
 import '../../schedule/presentation/my_schedule_screen.dart';
 import '../../profile/presentation/profile_screen.dart';
+import '../../wallet/presentation/wallet_screen.dart';
 import '../data/mock_jobs.dart';
 import '../models/job_model.dart';
 import '../widgets/available_soon_screen.dart';
@@ -404,11 +405,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     description: 'Connect with employers and team members in real-time. This feature is coming soon!',
                   ),
                   // Wallet Tab (index 3)
-                  const AvailableSoonScreen(
-                    icon: Icons.account_balance_wallet_outlined,
-                    title: 'Wallet',
-                    description: 'Manage your earnings, track payments, and view transaction history. This feature is coming soon!',
-                  ),
+                  const WalletScreen(),
                   // Profile Tab (index 4)
                   const ProfileScreen(),
                 ],

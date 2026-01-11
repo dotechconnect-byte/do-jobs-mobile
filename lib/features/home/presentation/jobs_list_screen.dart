@@ -132,17 +132,19 @@ class _JobsListScreenState extends State<JobsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: ColorManager.authBackground,
+      backgroundColor: isDark ? ColorManager.darkBackground : ColorManager.backgroundColor,
       appBar: AppBar(
-        backgroundColor: ColorManager.white,
+        backgroundColor: isDark ? ColorManager.darkCard : ColorManager.white,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: Icon(
             Icons.arrow_back_ios_rounded,
             size: 20.sp,
-            color: ColorManager.textPrimary,
+            color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
           ),
         ),
         title: Row(
@@ -176,7 +178,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                   style: GoogleFonts.poppins(
                     fontSize: FontSize.s18.sp,
                     fontWeight: FontWeightManager.bold,
-                    color: ColorManager.textPrimary,
+                    color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                   ),
                 ),
                 if (widget.subtitle != null)
@@ -185,7 +187,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                     style: GoogleFonts.poppins(
                       fontSize: FontSize.s12.sp,
                       fontWeight: FontWeightManager.regular,
-                      color: ColorManager.textSecondary,
+                      color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                     ),
                   ),
               ],
@@ -202,7 +204,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                   Icon(
                     Icons.work_off_outlined,
                     size: 80.sp,
-                    color: ColorManager.textTertiary,
+                    color: isDark ? ColorManager.darkTextTertiary : ColorManager.textTertiary,
                   ),
                   SizedBox(height: 16.h),
                   Text(
@@ -210,7 +212,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                     style: GoogleFonts.poppins(
                       fontSize: FontSize.s16.sp,
                       fontWeight: FontWeightManager.semiBold,
-                      color: ColorManager.textSecondary,
+                      color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -219,7 +221,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                     style: GoogleFonts.poppins(
                       fontSize: FontSize.s14.sp,
                       fontWeight: FontWeightManager.regular,
-                      color: ColorManager.textTertiary,
+                      color: isDark ? ColorManager.darkTextTertiary : ColorManager.textTertiary,
                     ),
                   ),
                 ],
@@ -230,13 +232,13 @@ class _JobsListScreenState extends State<JobsListScreen> {
               itemCount: widget.jobs.length,
               separatorBuilder: (context, index) => SizedBox(height: 12.h),
               itemBuilder: (context, index) {
-                return _buildJobCard(widget.jobs[index]);
+                return _buildJobCard(widget.jobs[index], isDark);
               },
             ),
     );
   }
 
-  Widget _buildJobCard(JobModel job) {
+  Widget _buildJobCard(JobModel job, bool isDark) {
     return GestureDetector(
       onTap: () {
         // Navigate to job detail screen (accessible to all users)
@@ -251,11 +253,27 @@ class _JobsListScreenState extends State<JobsListScreen> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: ColorManager.white,
+          gradient: isDark
+              ? LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    ColorManager.authPrimary.withValues(alpha: 0.15),
+                    ColorManager.authPrimaryDark.withValues(alpha: 0.1),
+                  ],
+                )
+              : null,
+          color: isDark ? null : ColorManager.white,
           borderRadius: BorderRadius.circular(16.r),
+          border: isDark
+              ? Border.all(
+                  color: ColorManager.authPrimary.withValues(alpha: 0.3),
+                  width: 1,
+                )
+              : null,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
+              color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.06),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -375,7 +393,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                     style: GoogleFonts.poppins(
                       fontSize: FontSize.s14.sp,
                       fontWeight: FontWeightManager.bold,
-                      color: ColorManager.textPrimary,
+                      color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -386,7 +404,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                     style: GoogleFonts.poppins(
                       fontSize: FontSize.s12.sp,
                       fontWeight: FontWeightManager.medium,
-                      color: ColorManager.textSecondary,
+                      color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -399,7 +417,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                       Icon(
                         Icons.location_on_outlined,
                         size: 14.sp,
-                        color: ColorManager.textSecondary,
+                        color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                       ),
                       SizedBox(width: 4.w),
                       Expanded(
@@ -408,7 +426,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                           style: GoogleFonts.poppins(
                             fontSize: FontSize.s11.sp,
                             fontWeight: FontWeightManager.regular,
-                            color: ColorManager.textSecondary,
+                            color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -434,7 +452,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                       Icon(
                         Icons.calendar_today_rounded,
                         size: 14.sp,
-                        color: ColorManager.textSecondary,
+                        color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                       ),
                       SizedBox(width: 4.w),
                       Text(
@@ -442,14 +460,14 @@ class _JobsListScreenState extends State<JobsListScreen> {
                         style: GoogleFonts.poppins(
                           fontSize: FontSize.s11.sp,
                           fontWeight: FontWeightManager.regular,
-                          color: ColorManager.textSecondary,
+                          color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                         ),
                       ),
                       SizedBox(width: 8.w),
                       Icon(
                         Icons.access_time_rounded,
                         size: 14.sp,
-                        color: ColorManager.textSecondary,
+                        color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                       ),
                       SizedBox(width: 4.w),
                       Text(
@@ -457,7 +475,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                         style: GoogleFonts.poppins(
                           fontSize: FontSize.s11.sp,
                           fontWeight: FontWeightManager.regular,
-                          color: ColorManager.textSecondary,
+                          color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                         ),
                       ),
                     ],
@@ -467,7 +485,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                   // Divider
                   Container(
                     height: 1,
-                    color: ColorManager.grey4,
+                    color: isDark ? ColorManager.darkBorder : ColorManager.grey4,
                   ),
                   SizedBox(height: 10.h),
 
@@ -484,7 +502,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                               style: GoogleFonts.poppins(
                                 fontSize: FontSize.s10.sp,
                                 fontWeight: FontWeightManager.regular,
-                                color: ColorManager.textSecondary,
+                                color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                               ),
                             ),
                             SizedBox(height: 2.h),
@@ -510,7 +528,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                               style: GoogleFonts.poppins(
                                 fontSize: FontSize.s10.sp,
                                 fontWeight: FontWeightManager.regular,
-                                color: ColorManager.textSecondary,
+                                color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                               ),
                             ),
                             SizedBox(height: 2.h),
@@ -519,7 +537,7 @@ class _JobsListScreenState extends State<JobsListScreen> {
                               style: GoogleFonts.poppins(
                                 fontSize: FontSize.s14.sp,
                                 fontWeight: FontWeightManager.bold,
-                                color: ColorManager.textPrimary,
+                                color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                               ),
                             ),
                           ],

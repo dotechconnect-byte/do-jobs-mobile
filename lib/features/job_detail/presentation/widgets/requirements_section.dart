@@ -14,6 +14,8 @@ class RequirementsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -22,7 +24,7 @@ class RequirementsSection extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: FontSize.s16.sp,
             fontWeight: FontWeightManager.bold,
-            color: ColorManager.textPrimary,
+            color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
           ),
         ),
         SizedBox(height: 12.h),
@@ -52,7 +54,7 @@ class RequirementsSection extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: FontSize.s14.sp,
                         fontWeight: FontWeightManager.regular,
-                        color: ColorManager.textSecondary,
+                        color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                         height: 1.5,
                       ),
                     ),

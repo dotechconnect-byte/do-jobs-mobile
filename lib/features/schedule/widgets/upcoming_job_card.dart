@@ -17,14 +17,32 @@ class UpcomingJobCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       decoration: BoxDecoration(
-        color: ColorManager.white,
+        gradient: isDark
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  ColorManager.authPrimary.withValues(alpha: 0.15),
+                  ColorManager.authPrimaryDark.withValues(alpha: 0.1),
+                ],
+              )
+            : null,
+        color: isDark ? null : ColorManager.white,
         borderRadius: BorderRadius.circular(16.r),
+        border: isDark
+            ? Border.all(
+                color: ColorManager.authPrimary.withValues(alpha: 0.3),
+                width: 1,
+              )
+            : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -44,7 +62,9 @@ class UpcomingJobCard extends StatelessWidget {
                   width: 48.w,
                   height: 48.w,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF3E8FF),
+                    color: isDark
+                        ? ColorManager.authPrimary.withValues(alpha: 0.2)
+                        : const Color(0xFFF3E8FF),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Icon(
@@ -65,7 +85,7 @@ class UpcomingJobCard extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           fontSize: FontSize.s16.sp,
                           fontWeight: FontWeightManager.bold,
-                          color: ColorManager.textPrimary,
+                          color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -76,7 +96,7 @@ class UpcomingJobCard extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           fontSize: FontSize.s14.sp,
                           fontWeight: FontWeightManager.regular,
-                          color: ColorManager.textSecondary,
+                          color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -93,7 +113,9 @@ class UpcomingJobCard extends StatelessWidget {
                     vertical: 4.h,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF3E8FF),
+                    color: isDark
+                        ? ColorManager.authPrimary.withValues(alpha: 0.2)
+                        : const Color(0xFFF3E8FF),
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Text(
@@ -114,7 +136,7 @@ class UpcomingJobCard extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Container(
               height: 1,
-              color: ColorManager.grey4,
+              color: isDark ? ColorManager.darkBorder : ColorManager.grey4,
             ),
           ),
 
@@ -161,7 +183,9 @@ class UpcomingJobCard extends StatelessWidget {
                           vertical: 10.h,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF3E8FF),
+                          color: isDark
+                              ? ColorManager.authPrimary.withValues(alpha: 0.2)
+                              : const Color(0xFFF3E8FF),
                           borderRadius: BorderRadius.circular(10.r),
                         ),
                         child: Row(
@@ -249,27 +273,32 @@ class UpcomingJobCard extends StatelessWidget {
     required IconData icon,
     required String text,
   }) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          size: 16.sp,
-          color: ColorManager.textSecondary,
-        ),
-        SizedBox(width: 8.w),
-        Expanded(
-          child: Text(
-            text,
-            style: GoogleFonts.poppins(
-              fontSize: FontSize.s13.sp,
-              fontWeight: FontWeightManager.regular,
-              color: ColorManager.textPrimary,
+    return Builder(
+      builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Row(
+          children: [
+            Icon(
+              icon,
+              size: 16.sp,
+              color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
+            SizedBox(width: 8.w),
+            Expanded(
+              child: Text(
+                text,
+                style: GoogleFonts.poppins(
+                  fontSize: FontSize.s13.sp,
+                  fontWeight: FontWeightManager.regular,
+                  color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

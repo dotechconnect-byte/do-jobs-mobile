@@ -16,13 +16,25 @@ class LocationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: ColorManager.white,
+        gradient: isDark
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  ColorManager.authPrimary.withValues(alpha: 0.15),
+                  ColorManager.authPrimaryDark.withValues(alpha: 0.1),
+                ],
+              )
+            : null,
+        color: isDark ? null : ColorManager.white,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: ColorManager.grey4,
+          color: isDark ? ColorManager.authPrimary.withValues(alpha: 0.3) : ColorManager.grey4,
           width: 1,
         ),
       ),
@@ -42,7 +54,7 @@ class LocationCard extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: FontSize.s14.sp,
                   fontWeight: FontWeightManager.semiBold,
-                  color: ColorManager.textPrimary,
+                  color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                 ),
               ),
             ],
@@ -53,7 +65,7 @@ class LocationCard extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: FontSize.s14.sp,
               fontWeight: FontWeightManager.regular,
-              color: ColorManager.textSecondary,
+              color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
             ),
           ),
           SizedBox(height: 12.h),
@@ -62,7 +74,7 @@ class LocationCard extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 12.h),
               decoration: BoxDecoration(
-                color: ColorManager.grey6,
+                color: isDark ? ColorManager.darkInput : ColorManager.grey6,
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Row(
@@ -71,7 +83,7 @@ class LocationCard extends StatelessWidget {
                   Icon(
                     Icons.map_outlined,
                     size: 18.sp,
-                    color: ColorManager.textPrimary,
+                    color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                   ),
                   SizedBox(width: 8.w),
                   Text(
@@ -79,14 +91,14 @@ class LocationCard extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: FontSize.s14.sp,
                       fontWeight: FontWeightManager.medium,
-                      color: ColorManager.textPrimary,
+                      color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                     ),
                   ),
                   SizedBox(width: 4.w),
                   Icon(
                     Icons.open_in_new,
                     size: 16.sp,
-                    color: ColorManager.textSecondary,
+                    color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                   ),
                 ],
               ),

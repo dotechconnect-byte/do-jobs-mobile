@@ -20,6 +20,8 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Row(
@@ -53,7 +55,7 @@ class SectionHeader extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: FontSize.s20.sp,
                     fontWeight: FontWeightManager.bold,
-                    color: ColorManager.textPrimary,
+                    color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                   ),
                 ),
                 if (subtitle != null) ...[
@@ -63,7 +65,7 @@ class SectionHeader extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: FontSize.s12.sp,
                       fontWeight: FontWeightManager.regular,
-                      color: ColorManager.textSecondary,
+                      color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                     ),
                   ),
                 ],

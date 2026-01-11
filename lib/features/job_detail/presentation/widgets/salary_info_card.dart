@@ -20,13 +20,25 @@ class SalaryInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: ColorManager.white,
+        gradient: isDark
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  ColorManager.authPrimary.withValues(alpha: 0.15),
+                  ColorManager.authPrimaryDark.withValues(alpha: 0.1),
+                ],
+              )
+            : null,
+        color: isDark ? null : ColorManager.white,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: ColorManager.grey4,
+          color: isDark ? ColorManager.authPrimary.withValues(alpha: 0.3) : ColorManager.grey4,
           width: 1,
         ),
       ),
@@ -47,7 +59,7 @@ class SalaryInfoCard extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: FontSize.s11.sp,
                     fontWeight: FontWeightManager.medium,
-                    color: ColorManager.textSecondary,
+                    color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -61,7 +73,7 @@ class SalaryInfoCard extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: FontSize.s14.sp,
               fontWeight: FontWeightManager.semiBold,
-              color: ColorManager.textPrimary,
+              color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
             ),
           ),
         ],

@@ -67,8 +67,10 @@ class _JobDetailScreenState extends State<JobDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: ColorManager.backgroundColor,
+      backgroundColor: isDark ? ColorManager.darkBackground : ColorManager.backgroundColor,
       body: Stack(
         children: [
           // Main Content
@@ -79,18 +81,18 @@ class _JobDetailScreenState extends State<JobDetailScreen>
               SliverAppBar(
                 expandedHeight: 280.h,
                 pinned: true,
-                backgroundColor: ColorManager.white,
+                backgroundColor: isDark ? ColorManager.darkCard : ColorManager.white,
                 leading: IconButton(
                   onPressed: () => Navigator.pop(context),
                   icon: Container(
                     width: 40.w,
                     height: 40.w,
                     decoration: BoxDecoration(
-                      color: ColorManager.white,
+                      color: isDark ? ColorManager.darkCard : ColorManager.white,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
+                          color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -99,7 +101,7 @@ class _JobDetailScreenState extends State<JobDetailScreen>
                     child: Icon(
                       Icons.arrow_back,
                       size: 20.sp,
-                      color: ColorManager.textPrimary,
+                      color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                     ),
                   ),
                 ),
@@ -107,10 +109,12 @@ class _JobDetailScreenState extends State<JobDetailScreen>
                   _buildActionButton(
                     Icons.star_outline,
                     () {},
+                    isDark,
                   ),
                   _buildActionButton(
                     Icons.info_outline,
                     () {},
+                    isDark,
                   ),
                   _buildActionButton(
                     _isSaved ? Icons.bookmark : Icons.bookmark_outline,
@@ -119,10 +123,12 @@ class _JobDetailScreenState extends State<JobDetailScreen>
                         _isSaved = !_isSaved;
                       });
                     },
+                    isDark,
                   ),
                   _buildActionButton(
                     Icons.notifications_outlined,
                     () {},
+                    isDark,
                   ),
                   SizedBox(width: 8.w),
                 ],
@@ -188,17 +194,17 @@ class _JobDetailScreenState extends State<JobDetailScreen>
                       // Tab Bar
                       Container(
                         decoration: BoxDecoration(
-                          color: ColorManager.grey6,
+                          color: isDark ? ColorManager.darkInput : ColorManager.grey6,
                           borderRadius: BorderRadius.circular(12.r),
                         ),
                         child: TabBar(
                           controller: _tabController,
                           indicator: BoxDecoration(
-                            color: ColorManager.white,
+                            color: isDark ? ColorManager.authPrimary.withValues(alpha: 0.2) : ColorManager.white,
                             borderRadius: BorderRadius.circular(12.r),
                           ),
-                          labelColor: ColorManager.textPrimary,
-                          unselectedLabelColor: ColorManager.textSecondary,
+                          labelColor: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
+                          unselectedLabelColor: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                           labelStyle: GoogleFonts.poppins(
                             fontSize: FontSize.s14.sp,
                             fontWeight: FontWeightManager.semiBold,
@@ -258,7 +264,7 @@ class _JobDetailScreenState extends State<JobDetailScreen>
     );
   }
 
-  Widget _buildActionButton(IconData icon, VoidCallback onTap) {
+  Widget _buildActionButton(IconData icon, VoidCallback onTap, bool isDark) {
     return Padding(
       padding: EdgeInsets.only(right: 8.w),
       child: GestureDetector(
@@ -267,11 +273,11 @@ class _JobDetailScreenState extends State<JobDetailScreen>
           width: 40.w,
           height: 40.w,
           decoration: BoxDecoration(
-            color: ColorManager.white,
+            color: isDark ? ColorManager.darkCard : ColorManager.white,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
+                color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -280,7 +286,7 @@ class _JobDetailScreenState extends State<JobDetailScreen>
           child: Icon(
             icon,
             size: 20.sp,
-            color: ColorManager.textPrimary,
+            color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
           ),
         ),
       ),
@@ -288,6 +294,8 @@ class _JobDetailScreenState extends State<JobDetailScreen>
   }
 
   Widget _buildDescriptionTab() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,7 +306,7 @@ class _JobDetailScreenState extends State<JobDetailScreen>
             style: GoogleFonts.poppins(
               fontSize: FontSize.s16.sp,
               fontWeight: FontWeightManager.bold,
-              color: ColorManager.textPrimary,
+              color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
             ),
           ),
           SizedBox(height: 12.h),
@@ -307,7 +315,7 @@ class _JobDetailScreenState extends State<JobDetailScreen>
             style: GoogleFonts.poppins(
               fontSize: FontSize.s14.sp,
               fontWeight: FontWeightManager.regular,
-              color: ColorManager.textSecondary,
+              color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
               height: 1.5,
             ),
           ),

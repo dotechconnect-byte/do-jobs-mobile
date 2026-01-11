@@ -18,12 +18,14 @@ class ApplyBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: ColorManager.white,
+        color: isDark ? ColorManager.darkSurface : ColorManager.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
             blurRadius: 12,
             offset: const Offset(0, -4),
           ),
@@ -43,7 +45,7 @@ class ApplyBottomBar extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: FontSize.s12.sp,
                       fontWeight: FontWeightManager.regular,
-                      color: ColorManager.textSecondary,
+                      color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                     ),
                   ),
                   Text(
@@ -64,13 +66,13 @@ class ApplyBottomBar extends StatelessWidget {
                   width: 48.w,
                   height: 48.h,
                   decoration: BoxDecoration(
-                    color: ColorManager.grey6,
+                    color: isDark ? ColorManager.darkInput : ColorManager.grey6,
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Icon(
                     Icons.share_outlined,
                     size: 20.sp,
-                    color: ColorManager.textPrimary,
+                    color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                   ),
                 ),
               ),

@@ -18,18 +18,19 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
   @override
   Widget build(BuildContext context) {
     final availabilityCount = MockCalendarEvents.getAvailabilityCount();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: ColorManager.authBackground,
+      backgroundColor: isDark ? ColorManager.darkBackground : ColorManager.authBackground,
       appBar: AppBar(
-        backgroundColor: ColorManager.white,
+        backgroundColor: isDark ? ColorManager.darkSurface : ColorManager.white,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: Icon(
             Icons.arrow_back_ios_rounded,
             size: 20.sp,
-            color: ColorManager.textPrimary,
+            color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
           ),
         ),
         title: Text(
@@ -37,7 +38,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
           style: GoogleFonts.poppins(
             fontSize: FontSize.s18.sp,
             fontWeight: FontWeightManager.bold,
-            color: ColorManager.textPrimary,
+            color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
           ),
         ),
         centerTitle: false,
@@ -47,10 +48,15 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              ColorManager.white,
-              ColorManager.authBackground,
-            ],
+            colors: isDark
+                ? [
+                    ColorManager.darkSurface,
+                    ColorManager.darkBackground,
+                  ]
+                : [
+                    ColorManager.white,
+                    ColorManager.authBackground,
+                  ],
           ),
         ),
         child: SingleChildScrollView(
@@ -85,6 +91,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
   }
 
   Widget _buildMonthHeader() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final monthNames = [
       'January',
       'February',
@@ -104,11 +111,27 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
       margin: EdgeInsets.symmetric(horizontal: 20.w),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color: ColorManager.white,
+        gradient: isDark
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  ColorManager.authPrimary.withValues(alpha: 0.15),
+                  ColorManager.authPrimaryDark.withValues(alpha: 0.1),
+                ],
+              )
+            : null,
+        color: isDark ? null : ColorManager.white,
         borderRadius: BorderRadius.circular(16.r),
+        border: isDark
+            ? Border.all(
+                color: ColorManager.authPrimary.withValues(alpha: 0.3),
+                width: 1,
+              )
+            : null,
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF8B5CF6).withValues(alpha: 0.1),
+            color: const Color(0xFF8B5CF6).withValues(alpha: isDark ? 0.2 : 0.1),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -125,7 +148,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
                 style: GoogleFonts.poppins(
                   fontSize: FontSize.s22.sp,
                   fontWeight: FontWeightManager.bold,
-                  color: ColorManager.textPrimary,
+                  color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                 ),
               ),
               Text(
@@ -133,7 +156,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
                 style: GoogleFonts.poppins(
                   fontSize: FontSize.s14.sp,
                   fontWeight: FontWeightManager.medium,
-                  color: ColorManager.textSecondary,
+                  color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                 ),
               ),
             ],
@@ -292,6 +315,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
   }
 
   Widget _buildCalendar() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final daysInMonth = _getDaysInMonth(_focusedMonth);
     final firstDayOfMonth = DateTime(_focusedMonth.year, _focusedMonth.month, 1);
     final firstWeekday = firstDayOfMonth.weekday % 7; // 0 = Sunday
@@ -300,16 +324,32 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
       margin: EdgeInsets.symmetric(horizontal: 20.w),
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: ColorManager.white,
+        gradient: isDark
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  ColorManager.authPrimary.withValues(alpha: 0.15),
+                  ColorManager.authPrimaryDark.withValues(alpha: 0.1),
+                ],
+              )
+            : null,
+        color: isDark ? null : ColorManager.white,
         borderRadius: BorderRadius.circular(20.r),
+        border: isDark
+            ? Border.all(
+                color: ColorManager.authPrimary.withValues(alpha: 0.3),
+                width: 1,
+              )
+            : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: const Color(0xFF8B5CF6).withValues(alpha: 0.05),
+            color: const Color(0xFF8B5CF6).withValues(alpha: isDark ? 0.1 : 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -563,6 +603,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
     }
 
     // Regular date cell
+    final isDarkCell = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: () {
         if (events.isEmpty) {
@@ -577,7 +618,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
         decoration: BoxDecoration(
           color: isToday
               ? ColorManager.authPrimary.withValues(alpha: 0.1)
-              : const Color(0xFFF5F3FF),
+              : (isDarkCell ? ColorManager.darkInput : const Color(0xFFF5F3FF)),
           borderRadius: BorderRadius.circular(12.r),
           border: isToday
               ? Border.all(
@@ -596,7 +637,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
                   : FontWeightManager.semiBold,
               color: isToday
                   ? ColorManager.authPrimary
-                  : ColorManager.textPrimary,
+                  : (isDarkCell ? ColorManager.darkTextPrimary : ColorManager.textPrimary),
             ),
           ),
         ),
@@ -605,6 +646,8 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
   }
 
   Widget _buildLegend() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20.w),
       padding: EdgeInsets.all(20.w),
@@ -612,14 +655,19 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            const Color(0xFFFAFAFA),
-            const Color(0xFFF5F3FF),
-          ],
+          colors: isDark
+              ? [
+                  ColorManager.authPrimary.withValues(alpha: 0.15),
+                  ColorManager.authPrimaryDark.withValues(alpha: 0.1),
+                ]
+              : [
+                  const Color(0xFFFAFAFA),
+                  const Color(0xFFF5F3FF),
+                ],
         ),
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: const Color(0xFF8B5CF6).withValues(alpha: 0.1),
+          color: const Color(0xFF8B5CF6).withValues(alpha: isDark ? 0.3 : 0.1),
           width: 1,
         ),
       ),
@@ -650,7 +698,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
                 style: GoogleFonts.poppins(
                   fontSize: FontSize.s16.sp,
                   fontWeight: FontWeightManager.bold,
-                  color: ColorManager.textPrimary,
+                  color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                 ),
               ),
             ],
@@ -685,13 +733,17 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
     required IconData icon,
     bool isOutline = false,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       children: [
         Container(
           width: 32.w,
           height: 32.w,
           decoration: BoxDecoration(
-            color: isOutline ? ColorManager.white : color,
+            color: isOutline
+                ? (isDark ? ColorManager.darkInput : ColorManager.white)
+                : color,
             border: isOutline ? Border.all(color: color, width: 2) : null,
             borderRadius: BorderRadius.circular(8.r),
           ),
@@ -708,7 +760,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
             style: GoogleFonts.poppins(
               fontSize: FontSize.s13.sp,
               fontWeight: FontWeightManager.medium,
-              color: ColorManager.textPrimary,
+              color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
             ),
           ),
         ),
@@ -718,11 +770,12 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
 
   void _showDayEventsDialog(DateTime date) {
     final events = MockCalendarEvents.getEventsForDate(date);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: ColorManager.white,
+        backgroundColor: isDark ? ColorManager.darkCard : ColorManager.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
         ),
@@ -731,7 +784,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
           style: GoogleFonts.poppins(
             fontSize: FontSize.s18.sp,
             fontWeight: FontWeightManager.bold,
-            color: ColorManager.textPrimary,
+            color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
           ),
         ),
         content: Column(
@@ -743,8 +796,12 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
               padding: EdgeInsets.all(12.w),
               decoration: BoxDecoration(
                 color: event.isScheduled
-                    ? const Color(0xFFDEEBFF)
-                    : const Color(0xFFD1FAE5),
+                    ? (isDark
+                        ? const Color(0xFF3B82F6).withValues(alpha: 0.2)
+                        : const Color(0xFFDEEBFF))
+                    : (isDark
+                        ? const Color(0xFF10B981).withValues(alpha: 0.2)
+                        : const Color(0xFFD1FAE5)),
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Column(
@@ -755,7 +812,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
                     style: GoogleFonts.poppins(
                       fontSize: FontSize.s14.sp,
                       fontWeight: FontWeightManager.semiBold,
-                      color: ColorManager.textPrimary,
+                      color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                     ),
                   ),
                   SizedBox(height: 4.h),
@@ -764,7 +821,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
                     style: GoogleFonts.poppins(
                       fontSize: FontSize.s12.sp,
                       fontWeight: FontWeightManager.regular,
-                      color: ColorManager.textSecondary,
+                      color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                     ),
                   ),
                 ],

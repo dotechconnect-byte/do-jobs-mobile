@@ -5,6 +5,7 @@ import '../../../core/consts/color_manager.dart';
 import '../../../core/consts/font_manager.dart';
 import '../data/mock_schedule.dart';
 import '../widgets/upcoming_job_card.dart';
+import '../widgets/completed_job_card.dart';
 import 'calendar_view_screen.dart';
 
 class MyScheduleScreen extends StatefulWidget {
@@ -37,7 +38,7 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
         // Header
         _buildHeader(context),
 
-        // Tabs
+        // T
         _buildTabs(),
 
         SizedBox(height: 16.h),
@@ -140,16 +141,18 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
   }
 
   Widget _buildTabs() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Container(
         height: 44.h,
         decoration: BoxDecoration(
-          color: ColorManager.white,
+          color: isDark ? ColorManager.darkCard : ColorManager.white,
           borderRadius: BorderRadius.circular(12.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -170,7 +173,7 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
             borderRadius: BorderRadius.circular(12.r),
           ),
           labelColor: ColorManager.white,
-          unselectedLabelColor: ColorManager.textSecondary,
+          unselectedLabelColor: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
           labelStyle: GoogleFonts.poppins(
             fontSize: FontSize.s12.sp,
             fontWeight: FontWeightManager.semiBold,
@@ -230,6 +233,7 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
 
   Widget _buildUpcomingTab() {
     final upcomingJobs = MockSchedule.upcomingJobs;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Column(
       children: [
@@ -243,7 +247,7 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
                 style: GoogleFonts.poppins(
                   fontSize: FontSize.s18.sp,
                   fontWeight: FontWeightManager.bold,
-                  color: ColorManager.textPrimary,
+                  color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                 ),
               ),
               SizedBox(width: 12.w),
@@ -287,7 +291,7 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
                       Icon(
                         Icons.event_busy_rounded,
                         size: 80.sp,
-                        color: ColorManager.textTertiary,
+                        color: isDark ? ColorManager.darkTextTertiary : ColorManager.textTertiary,
                       ),
                       SizedBox(height: 16.h),
                       Text(
@@ -295,7 +299,7 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
                         style: GoogleFonts.poppins(
                           fontSize: FontSize.s16.sp,
                           fontWeight: FontWeightManager.semiBold,
-                          color: ColorManager.textSecondary,
+                          color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                         ),
                       ),
                       SizedBox(height: 8.h),
@@ -304,7 +308,7 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
                         style: GoogleFonts.poppins(
                           fontSize: FontSize.s14.sp,
                           fontWeight: FontWeightManager.regular,
-                          color: ColorManager.textTertiary,
+                          color: isDark ? ColorManager.darkTextTertiary : ColorManager.textTertiary,
                         ),
                       ),
                     ],
@@ -329,6 +333,7 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
 
   Widget _buildCompletedTab() {
     final completedJobs = MockSchedule.completedJobs;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Column(
       children: [
@@ -342,7 +347,7 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
                 style: GoogleFonts.poppins(
                   fontSize: FontSize.s18.sp,
                   fontWeight: FontWeightManager.bold,
-                  color: ColorManager.textPrimary,
+                  color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                 ),
               ),
               SizedBox(width: 12.w),
@@ -369,48 +374,63 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
         ),
         SizedBox(height: 16.h),
 
-        // Placeholder for completed jobs
+        // Completed jobs list
         Expanded(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.check_circle_outline_rounded,
-                  size: 80.sp,
-                  color: ColorManager.textTertiary,
-                ),
-                SizedBox(height: 16.h),
-                Text(
-                  'Completed Jobs Coming Soon',
-                  style: GoogleFonts.poppins(
-                    fontSize: FontSize.s16.sp,
-                    fontWeight: FontWeightManager.semiBold,
-                    color: ColorManager.textSecondary,
+          child: completedJobs.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.check_circle_outline_rounded,
+                        size: 80.sp,
+                        color: isDark ? ColorManager.darkTextTertiary : ColorManager.textTertiary,
+                      ),
+                      SizedBox(height: 16.h),
+                      Text(
+                        'No completed shifts yet',
+                        style: GoogleFonts.poppins(
+                          fontSize: FontSize.s16.sp,
+                          fontWeight: FontWeightManager.semiBold,
+                          color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      Text(
+                        'Your completed job history will appear here',
+                        style: GoogleFonts.poppins(
+                          fontSize: FontSize.s14.sp,
+                          fontWeight: FontWeightManager.regular,
+                          color: isDark ? ColorManager.darkTextTertiary : ColorManager.textTertiary,
+                        ),
+                      ),
+                    ],
                   ),
+                )
+              : ListView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  itemCount: completedJobs.length,
+                  itemBuilder: (context, index) {
+                    return CompletedJobCard(
+                      job: completedJobs[index],
+                      onTap: () {
+                        // TODO: Navigate to completed job details
+                      },
+                    );
+                  },
                 ),
-                SizedBox(height: 8.h),
-                Text(
-                  'Your completed job history will appear here',
-                  style: GoogleFonts.poppins(
-                    fontSize: FontSize.s14.sp,
-                    fontWeight: FontWeightManager.regular,
-                    color: ColorManager.textTertiary,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
       ],
     );
   }
 
   void _showScanInDialog(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: ColorManager.white,
+        backgroundColor: isDark ? ColorManager.darkCard : ColorManager.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
         ),
@@ -443,7 +463,7 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
               style: GoogleFonts.poppins(
                 fontSize: FontSize.s20.sp,
                 fontWeight: FontWeightManager.bold,
-                color: ColorManager.textPrimary,
+                color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
               ),
             ),
             SizedBox(height: 12.h),
@@ -453,7 +473,7 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
               style: GoogleFonts.poppins(
                 fontSize: FontSize.s14.sp,
                 fontWeight: FontWeightManager.regular,
-                color: ColorManager.textSecondary,
+                color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
               ),
             ),
             SizedBox(height: 24.h),
