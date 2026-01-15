@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/consts/color_manager.dart';
 import '../../../../core/consts/font_manager.dart';
 import '../../models/job_detail_model.dart';
@@ -185,9 +187,7 @@ class _JobDetailScreenState extends State<JobDetailScreen>
                       // Location Card
                       LocationCard(
                         location: widget.job.address,
-                        onOpenMaps: () {
-                          // TODO: Open maps
-                        },
+                        onOpenMaps: _openMaps,
                       ),
                       SizedBox(height: 24.h),
 
@@ -253,9 +253,7 @@ class _JobDetailScreenState extends State<JobDetailScreen>
               onApply: () {
                 // TODO: Handle apply
               },
-              onShare: () {
-                // TODO: Handle share
-              },
+              onShare: _shareJob,
             ),
           ),
 
@@ -356,5 +354,65 @@ class _JobDetailScreenState extends State<JobDetailScreen>
         ],
       ),
     );
+  }
+
+  void _shareJob() {
+    final shareText = StringBuffer()
+      ..writeln('Check out this job: ${widget.job.title}')
+      ..writeln('Company: ${widget.job.company}')
+      ..writeln('Location: ${widget.job.location}')
+      ..writeln('Package: \$${widget.job.totalPackage.toStringAsFixed(0)}/year')
+      ..writeln()
+      ..writeln('Found on DO Jobs');
+
+    Share.share(shareText.toString());
+  }
+
+  Future<void> _openMaps() async {
+    final query = Uri.encodeComponent(widget.job.address);
+    final candidates = <Uri>[
+      Uri.parse('geo:0,0?q=$query'), // Native maps intent
+      Uri.parse('https://www.google.com/maps/search/?api=1&query=$query'),
+      Uri.parse('https://www.google.com/maps/place/$query'),
+    ];
+
+    for (final uri in candidates) {
+      if (await _launchWithFallback(uri, preferExternal: true)) return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Could not open maps')),
+    );
+  }
+
+  Future<bool> _launchWithFallback(Uri uri, {bool preferExternal = false}) async {
+    // Try external (non-browser) first
+    if (preferExternal && await canLaunchUrl(uri)) {
+      final success = await launchUrl(
+        uri,
+        mode: LaunchMode.externalNonBrowserApplication,
+      );
+      if (success) return true;
+    }
+
+    // Try platform default (may open browser)
+    if (await canLaunchUrl(uri)) {
+      final success = await launchUrl(
+        uri,
+        mode: LaunchMode.platformDefault,
+      );
+      if (success) return true;
+    }
+
+    // Try in-app web view as last resort
+    if (uri.scheme.startsWith('http')) {
+      final success = await launchUrl(
+        uri,
+        mode: LaunchMode.inAppWebView,
+      );
+      if (success) return true;
+    }
+
+    return false;
   }
 }

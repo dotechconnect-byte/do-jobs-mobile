@@ -12,7 +12,6 @@ import '../../profile/presentation/profile_screen.dart';
 import '../../wallet/presentation/wallet_screen.dart';
 import '../data/mock_jobs.dart';
 import '../models/job_model.dart';
-import '../widgets/available_soon_screen.dart';
 import '../widgets/category_chips.dart';
 import '../widgets/guest_bottom_nav.dart';
 import '../widgets/job_card.dart';
@@ -398,15 +397,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   // Jobs/Schedule Tab (index 1)
                   const MyScheduleScreen(),
-                  // Chat Tab (index 2)
-                  const AvailableSoonScreen(
-                    icon: Icons.chat_bubble_outline_rounded,
-                    title: 'Chat',
-                    description: 'Connect with employers and team members in real-time. This feature is coming soon!',
-                  ),
-                  // Wallet Tab (index 3)
+                  // Wallet Tab (index 2)
                   const WalletScreen(),
-                  // Profile Tab (index 4)
+                  // Profile Tab (index 3)
                   const ProfileScreen(),
                 ],
               ),

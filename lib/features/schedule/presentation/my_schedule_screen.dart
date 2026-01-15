@@ -4,9 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/consts/color_manager.dart';
 import '../../../core/consts/font_manager.dart';
 import '../data/mock_schedule.dart';
+import '../models/schedule_job_model.dart';
 import '../widgets/upcoming_job_card.dart';
 import '../widgets/completed_job_card.dart';
 import 'calendar_view_screen.dart';
+import 'scan_in_screen.dart';
 
 class MyScheduleScreen extends StatefulWidget {
   const MyScheduleScreen({super.key});
@@ -320,9 +322,7 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
                   itemBuilder: (context, index) {
                     return UpcomingJobCard(
                       job: upcomingJobs[index],
-                      onScanIn: () {
-                        _showScanInDialog(context);
-                      },
+                      onScanIn: () => _openScanIn(upcomingJobs[index]),
                     );
                   },
                 ),
@@ -424,83 +424,20 @@ class _MyScheduleScreenState extends State<MyScheduleScreen>
     );
   }
 
-  void _showScanInDialog(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  Future<void> _openScanIn(ScheduleJobModel job) async {
+    final result = await Navigator.push<String?>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ScanInScreen(job: job),
+      ),
+    );
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: isDark ? ColorManager.darkCard : ColorManager.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.r),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 80.w,
-              height: 80.w,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF10B981),
-                    Color(0xFF059669),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(20.r),
-              ),
-              child: Icon(
-                Icons.qr_code_scanner_rounded,
-                size: 40.sp,
-                color: ColorManager.white,
-              ),
-            ),
-            SizedBox(height: 24.h),
-            Text(
-              'QR Code Scanner',
-              style: GoogleFonts.poppins(
-                fontSize: FontSize.s20.sp,
-                fontWeight: FontWeightManager.bold,
-                color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
-              ),
-            ),
-            SizedBox(height: 12.h),
-            Text(
-              'This feature will open the QR code scanner to scan in for your shift.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontSize: FontSize.s14.sp,
-                fontWeight: FontWeightManager.regular,
-                color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
-              ),
-            ),
-            SizedBox(height: 24.h),
-            SizedBox(
-              width: double.infinity,
-              height: 48.h,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF10B981),
-                  foregroundColor: ColorManager.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                ),
-                child: Text(
-                  'Got it',
-                  style: GoogleFonts.poppins(
-                    fontSize: FontSize.s16.sp,
-                    fontWeight: FontWeightManager.semiBold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+    if (!mounted || result == null) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Scanned code: $result'),
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }

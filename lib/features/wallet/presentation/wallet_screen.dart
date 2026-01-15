@@ -5,6 +5,7 @@ import '../../../core/consts/color_manager.dart';
 import '../../../core/consts/font_manager.dart';
 import '../data/mock_transactions.dart';
 import '../models/transaction_model.dart';
+import 'withdraw_screen.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
@@ -33,33 +34,57 @@ class _WalletScreenState extends State<WalletScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tabBar = _buildTabBar(isDark);
+    final tabBarVerticalPadding = 0.h;
+    final tabBarContainerPadding = 0.h;
+    final tabBarHeight =
+        tabBar.preferredSize.height + (tabBarVerticalPadding * 2) + (tabBarContainerPadding * 2);
 
     return Scaffold(
       backgroundColor: isDark ? ColorManager.darkBackground : ColorManager.authBackground,
-      body: Column(
-        children: [
-          // Balance Section
-          _buildBalanceSection(isDark),
-
-          // Stats Cards
-          _buildStatsCards(isDark),
-
-          SizedBox(height: 20.h),
-
-          // Tabs Section
-          _buildTabsSection(isDark),
-
-          // Tab Content
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildPaymentHistory(isDark),
-                _buildEarningsOverview(isDark),
-              ],
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverToBoxAdapter(
+            child: _buildBalanceSection(isDark),
+          ),
+          SliverToBoxAdapter(
+            child: _buildStatsCards(isDark),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: 0.h)),
+          SliverAppBar(
+            pinned: true,
+            floating: false,
+            snap: false,
+            elevation: 0,
+            backgroundColor: isDark ? ColorManager.darkBackground : ColorManager.authBackground,
+            toolbarHeight: 0,
+            collapsedHeight: tabBarHeight,
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(tabBarHeight),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: tabBarVerticalPadding),
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 4.w,
+                    vertical: tabBarContainerPadding,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDark ? ColorManager.darkCard : ColorManager.white,
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: tabBar,
+                ),
+              ),
             ),
           ),
         ],
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            _buildPaymentHistory(isDark),
+            _buildEarningsOverview(isDark),
+          ],
+        ),
       ),
     );
   }
@@ -113,7 +138,14 @@ class _WalletScreenState extends State<WalletScreen> with SingleTickerProviderSt
               const Spacer(),
               ElevatedButton.icon(
                 onPressed: () {
-                  // TODO: Withdraw action
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const WithdrawScreen(
+                        availableBalance: 1247.50,
+                      ),
+                    ),
+                  );
                 },
                 icon: Icon(
                   Icons.arrow_upward,
@@ -462,121 +494,235 @@ class _WalletScreenState extends State<WalletScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildTabsSection(bool isDark) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w),
-      padding: EdgeInsets.all(4.w),
-      decoration: BoxDecoration(
-        color: isDark ? ColorManager.darkCard : ColorManager.white,
-        borderRadius: BorderRadius.circular(12.r),
+  TabBar _buildTabBar(bool isDark) {
+    return TabBar(
+      controller: _tabController,
+      indicatorSize: TabBarIndicatorSize.tab,
+      indicator: BoxDecoration(
+        color: isDark ? ColorManager.authPrimary.withValues(alpha: 0.2) : const Color(0xFFF5F3FF),
+        borderRadius: BorderRadius.circular(10.r),
       ),
-      child: TabBar(
-        controller: _tabController,
-        indicatorSize: TabBarIndicatorSize.tab,
-        indicator: BoxDecoration(
-          color: isDark ? ColorManager.authPrimary.withValues(alpha: 0.2) : const Color(0xFFF5F3FF),
-          borderRadius: BorderRadius.circular(10.r),
-        ),
-        labelColor: ColorManager.authPrimary,
-        unselectedLabelColor: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
-        labelStyle: GoogleFonts.poppins(
-          fontSize: FontSize.s13.sp,
-          fontWeight: FontWeightManager.semiBold,
-        ),
-        unselectedLabelStyle: GoogleFonts.poppins(
-          fontSize: FontSize.s13.sp,
-          fontWeight: FontWeightManager.medium,
-        ),
-        dividerColor: Colors.transparent,
-        tabs: const [
-          Tab(text: 'Payment History'),
-          Tab(text: 'Earnings Overview'),
-        ],
+      labelColor: ColorManager.authPrimary,
+      unselectedLabelColor: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
+      labelStyle: GoogleFonts.poppins(
+        fontSize: FontSize.s13.sp,
+        fontWeight: FontWeightManager.semiBold,
       ),
+      unselectedLabelStyle: GoogleFonts.poppins(
+        fontSize: FontSize.s13.sp,
+        fontWeight: FontWeightManager.medium,
+      ),
+      dividerColor: Colors.transparent,
+      tabs: const [
+        Tab(text: 'Payment History'),
+        Tab(text: 'Earnings Overview'),
+      ],
     );
   }
 
   Widget _buildPaymentHistory(bool isDark) {
     final transactions = MockTransactions.transactions;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 20.h),
-          // Section Title
-          Text(
-            'Recent Transactions',
-            style: GoogleFonts.poppins(
-              fontSize: FontSize.s16.sp,
-              fontWeight: FontWeightManager.bold,
-              color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
+    return CustomScrollView(
+      key: const PageStorageKey<String>('payment-history'),
+      primary: false,
+      slivers: [
+        SliverPadding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          sliver: SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 20.h),
+                // Section Title
+                Text(
+                  'Recent Transactions',
+                  style: GoogleFonts.poppins(
+                    fontSize: FontSize.s16.sp,
+                    fontWeight: FontWeightManager.bold,
+                    color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  'Your payment activity',
+                  style: GoogleFonts.poppins(
+                    fontSize: FontSize.s12.sp,
+                    fontWeight: FontWeightManager.regular,
+                    color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                // Filters
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildFilterDropdown(
+                        isDark,
+                        _selectedType,
+                        ['All Types', 'Incoming', 'Withdrawals'],
+                        (value) {
+                          setState(() {
+                            _selectedType = value;
+                          });
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: _buildFilterDropdown(
+                        isDark,
+                        _selectedStatus,
+                        ['All Status', 'Completed', 'Pending', 'Processing'],
+                        (value) {
+                          setState(() {
+                            _selectedStatus = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.h),
+              ],
             ),
           ),
-          SizedBox(height: 4.h),
-          Text(
-            'Your payment activity',
-            style: GoogleFonts.poppins(
-              fontSize: FontSize.s12.sp,
-              fontWeight: FontWeightManager.regular,
-              color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
-            ),
-          ),
-          SizedBox(height: 16.h),
-
-          // Filters
-          Row(
-            children: [
-              Expanded(child: _buildFilterDropdown(isDark, 'All Types', ['All Types', 'Incoming', 'Withdrawals'])),
-              SizedBox(width: 12.w),
-              Expanded(child: _buildFilterDropdown(isDark, 'All Status', ['All Status', 'Completed', 'Pending', 'Processing'])),
-            ],
-          ),
-          SizedBox(height: 16.h),
-
-          // Transactions List
-          Expanded(
-            child: ListView.builder(
-              itemCount: transactions.length,
-              itemBuilder: (context, index) {
+        ),
+        SliverPadding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
                 return _buildTransactionItem(isDark, transactions[index]);
               },
+              childCount: transactions.length,
             ),
           ),
-        ],
+        ),
+        SliverToBoxAdapter(child: SizedBox(height: 20.h)),
+      ],
+    );
+  }
+
+  Widget _buildFilterDropdown(
+    bool isDark,
+    String value,
+    List<String> options,
+    Function(String) onChanged,
+  ) {
+    return GestureDetector(
+      onTap: () {
+        _showFilterOptions(isDark, value, options, onChanged);
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: isDark ? ColorManager.darkCard : ColorManager.white,
+          borderRadius: BorderRadius.circular(10.r),
+          border: Border.all(
+            color: isDark ? ColorManager.darkBorder : ColorManager.grey4,
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                value,
+                style: GoogleFonts.poppins(
+                  fontSize: FontSize.s12.sp,
+                  fontWeight: FontWeightManager.medium,
+                  color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.keyboard_arrow_down,
+              size: 20.sp,
+              color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildFilterDropdown(bool isDark, String value, List<String> options) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
-      decoration: BoxDecoration(
-        color: isDark ? ColorManager.darkCard : ColorManager.white,
-        borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(
-          color: isDark ? ColorManager.darkBorder : ColorManager.grey4,
+  void _showFilterOptions(
+    bool isDark,
+    String currentValue,
+    List<String> options,
+    Function(String) onChanged,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: isDark ? ColorManager.darkCard : ColorManager.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24.r),
+            topRight: Radius.circular(24.r),
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              value,
-              style: GoogleFonts.poppins(
-                fontSize: FontSize.s12.sp,
-                fontWeight: FontWeightManager.medium,
-                color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              margin: EdgeInsets.only(top: 12.h),
+              width: 40.w,
+              height: 4.h,
+              decoration: BoxDecoration(
+                color: isDark ? ColorManager.darkBorder : ColorManager.grey4,
+                borderRadius: BorderRadius.circular(2.r),
               ),
             ),
-          ),
-          Icon(
-            Icons.keyboard_arrow_down,
-            size: 20.sp,
-            color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
-          ),
-        ],
+            SizedBox(height: 20.h),
+            // Options
+            ...options.map((option) {
+              final isSelected = option == currentValue;
+              return InkWell(
+                onTap: () {
+                  onChanged(option);
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? ColorManager.authPrimary.withValues(alpha: 0.1)
+                        : Colors.transparent,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          option,
+                          style: GoogleFonts.poppins(
+                            fontSize: FontSize.s14.sp,
+                            fontWeight: isSelected
+                                ? FontWeightManager.semiBold
+                                : FontWeightManager.medium,
+                            color: isSelected
+                                ? ColorManager.authPrimary
+                                : (isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary),
+                          ),
+                        ),
+                      ),
+                      if (isSelected)
+                        Icon(
+                          Icons.check_circle,
+                          size: 20.sp,
+                          color: ColorManager.authPrimary,
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+            SizedBox(height: 20.h),
+          ],
+        ),
       ),
     );
   }
@@ -697,36 +843,44 @@ class _WalletScreenState extends State<WalletScreen> with SingleTickerProviderSt
   }
 
   Widget _buildEarningsOverview(bool isDark) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.bar_chart_rounded,
-            size: 80.sp,
-            color: isDark ? ColorManager.darkTextTertiary : ColorManager.textTertiary,
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            'Earnings Overview Coming Soon',
-            style: GoogleFonts.poppins(
-              fontSize: FontSize.s16.sp,
-              fontWeight: FontWeightManager.semiBold,
-              color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
+    return CustomScrollView(
+      primary: false,
+      slivers: [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.bar_chart_rounded,
+                  size: 80.sp,
+                  color: isDark ? ColorManager.darkTextTertiary : ColorManager.textTertiary,
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  'Earnings Overview Coming Soon',
+                  style: GoogleFonts.poppins(
+                    fontSize: FontSize.s16.sp,
+                    fontWeight: FontWeightManager.semiBold,
+                    color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  'Your earnings charts and analytics will appear here',
+                  style: GoogleFonts.poppins(
+                    fontSize: FontSize.s13.sp,
+                    fontWeight: FontWeightManager.regular,
+                    color: isDark ? ColorManager.darkTextTertiary : ColorManager.textTertiary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
-          SizedBox(height: 8.h),
-          Text(
-            'Your earnings charts and analytics will appear here',
-            style: GoogleFonts.poppins(
-              fontSize: FontSize.s13.sp,
-              fontWeight: FontWeightManager.regular,
-              color: isDark ? ColorManager.darkTextTertiary : ColorManager.textTertiary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
