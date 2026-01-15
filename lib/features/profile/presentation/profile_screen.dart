@@ -96,73 +96,56 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _buildProfileHeader(BuildContext context, bool isDark) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w),
-      padding: EdgeInsets.all(24.w),
+      margin: EdgeInsets.symmetric(horizontal: 16.w),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: ColorManager.authGradient,
         ),
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(12.r),
       ),
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.person_outline,
-                          color: ColorManager.white,
-                          size: 20.sp,
-                        ),
-                        SizedBox(width: 8.w),
-                        Text(
-                          'My Profile',
-                          style: GoogleFonts.poppins(
-                            fontSize: FontSize.s22.sp,
-                            fontWeight: FontWeightManager.bold,
-                            color: ColorManager.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      'Manage your personal information and documents',
-                      style: GoogleFonts.poppins(
-                        fontSize: FontSize.s12.sp,
-                        fontWeight: FontWeightManager.regular,
-                        color: ColorManager.white.withValues(alpha: 0.9),
-                      ),
-                    ),
-                  ],
+                Icon(
+                  Icons.person_outline,
+                  color: ColorManager.white,
+                  size: 18.sp,
                 ),
+                SizedBox(width: 6.w),
+                Text(
+                  'My Profile',
+                  style: GoogleFonts.poppins(
+                    fontSize: FontSize.s18.sp,
+                    fontWeight: FontWeightManager.bold,
+                    color: ColorManager.white,
+                  ),
+                ),
+                const Spacer(),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                   decoration: BoxDecoration(
                     color: const Color(0xFF06D6A0),
-                    borderRadius: BorderRadius.circular(20.r),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         Icons.check_circle,
                         color: ColorManager.white,
-                        size: 14.sp,
+                        size: 12.sp,
                       ),
-                      SizedBox(width: 4.w),
+                      SizedBox(width: 3.w),
                       Text(
                         'Submitted',
                         style: GoogleFonts.poppins(
-                          fontSize: FontSize.s11.sp,
+                          fontSize: FontSize.s10.sp,
                           fontWeight: FontWeightManager.semiBold,
                           color: ColorManager.white,
                         ),
@@ -172,14 +155,23 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 6.h),
+            Text(
+              'Manage your personal information and documents',
+              style: GoogleFonts.poppins(
+                fontSize: FontSize.s11.sp,
+                fontWeight: FontWeightManager.regular,
+                color: ColorManager.white.withValues(alpha: 0.9),
+              ),
+            ),
+            SizedBox(height: 12.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Profile Completion',
                   style: GoogleFonts.poppins(
-                    fontSize: FontSize.s14.sp,
+                    fontSize: FontSize.s12.sp,
                     fontWeight: FontWeightManager.medium,
                     color: ColorManager.white,
                   ),
@@ -187,21 +179,21 @@ class ProfileScreen extends StatelessWidget {
                 Text(
                   '50%',
                   style: GoogleFonts.poppins(
-                    fontSize: FontSize.s14.sp,
+                    fontSize: FontSize.s12.sp,
                     fontWeight: FontWeightManager.bold,
                     color: ColorManager.white,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
             ClipRRect(
-              borderRadius: BorderRadius.circular(10.r),
+              borderRadius: BorderRadius.circular(8.r),
               child: LinearProgressIndicator(
                 value: 0.5,
                 backgroundColor: ColorManager.white.withValues(alpha: 0.3),
                 valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFD79A8)),
-                minHeight: 8.h,
+                minHeight: 6.h,
               ),
             ),
           ],
@@ -222,17 +214,17 @@ class ProfileScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w),
+      margin: EdgeInsets.symmetric(horizontal: 16.w),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16.r),
+          borderRadius: BorderRadius.circular(12.r),
           child: Container(
-            padding: EdgeInsets.all(16.w),
+            padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
               color: isDark ? ColorManager.darkCard : ColorManager.white,
-              borderRadius: BorderRadius.circular(16.r),
+              borderRadius: BorderRadius.circular(12.r),
               border: Border.all(
                 color: isDark ? ColorManager.darkBorder : ColorManager.grey4,
                 width: 1,
@@ -241,19 +233,19 @@ class ProfileScreen extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  width: 48.w,
-                  height: 48.w,
+                  width: 40.w,
+                  height: 40.w,
                   decoration: BoxDecoration(
                     color: ColorManager.authPrimary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Icon(
                     icon,
                     color: ColorManager.authPrimary,
-                    size: 24.sp,
+                    size: 20.sp,
                   ),
                 ),
-                SizedBox(width: 16.w),
+                SizedBox(width: 12.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,19 +256,19 @@ class ProfileScreen extends StatelessWidget {
                             child: Text(
                               title,
                               style: GoogleFonts.poppins(
-                                fontSize: FontSize.s15.sp,
+                                fontSize: FontSize.s13.sp,
                                 fontWeight: FontWeightManager.semiBold,
                                 color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                               ),
                             ),
                           ),
                           if (badge != null) ...[
-                            SizedBox(width: 8.w),
+                            SizedBox(width: 6.w),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                               decoration: BoxDecoration(
                                 color: badgeColor ?? ColorManager.authPrimary.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12.r),
+                                borderRadius: BorderRadius.circular(10.r),
                               ),
                               child: Text(
                                 badge,
@@ -290,11 +282,11 @@ class ProfileScreen extends StatelessWidget {
                           ],
                         ],
                       ),
-                      SizedBox(height: 4.h),
+                      SizedBox(height: 2.h),
                       Text(
                         subtitle,
                         style: GoogleFonts.poppins(
-                          fontSize: FontSize.s12.sp,
+                          fontSize: FontSize.s11.sp,
                           fontWeight: FontWeightManager.regular,
                           color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                         ),
@@ -302,11 +294,11 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(width: 8.w),
+                SizedBox(width: 6.w),
                 Icon(
                   Icons.chevron_right,
                   color: isDark ? ColorManager.darkTextTertiary : ColorManager.textTertiary,
-                  size: 24.sp,
+                  size: 20.sp,
                 ),
               ],
             ),
