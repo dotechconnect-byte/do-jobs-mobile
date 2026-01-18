@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../consts/color_manager.dart';
 import '../consts/font_manager.dart';
+import '../providers/theme_provider.dart';
 
 class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -51,6 +53,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.isDarkMode;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -60,7 +65,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           style: GoogleFonts.poppins(
             fontSize: FontSize.s14.sp,
             fontWeight: FontWeightManager.semiBold,
-            color: ColorManager.textPrimary,
+            color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
           ),
         ),
         SizedBox(height: 8.h),
@@ -84,20 +89,20 @@ class _CustomTextFieldState extends State<CustomTextField> {
             style: GoogleFonts.poppins(
               fontSize: FontSize.s14.sp,
               fontWeight: FontWeightManager.regular,
-              color: ColorManager.textPrimary,
+              color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
             ),
             decoration: InputDecoration(
               hintText: widget.hintText,
               hintStyle: GoogleFonts.poppins(
                 fontSize: FontSize.s14.sp,
                 fontWeight: FontWeightManager.regular,
-                color: ColorManager.textTertiary,
+                color: isDark ? ColorManager.darkTextSecondary : ColorManager.textTertiary,
               ),
               prefixIcon: Icon(
                 widget.prefixIcon,
                 color: _isFocused
                     ? ColorManager.authPrimary
-                    : ColorManager.textTertiary,
+                    : (isDark ? ColorManager.darkTextSecondary : ColorManager.textTertiary),
                 size: 20.sp,
               ),
               suffixIcon: widget.isPassword && widget.showPasswordToggle
@@ -106,7 +111,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                         _obscureText
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
-                        color: ColorManager.textTertiary,
+                        color: isDark ? ColorManager.darkTextSecondary : ColorManager.textTertiary,
                         size: 20.sp,
                       ),
                       onPressed: () {
@@ -117,22 +122,22 @@ class _CustomTextFieldState extends State<CustomTextField> {
                     )
                   : null,
               filled: true,
-              fillColor: ColorManager.authInputBackground,
+              fillColor: isDark ? ColorManager.darkCard : ColorManager.authInputBackground,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 16.w,
                 vertical: 16.h,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12.r),
-                borderSide: const BorderSide(
-                  color: ColorManager.authInputBorder,
+                borderSide: BorderSide(
+                  color: isDark ? ColorManager.darkBorder : ColorManager.authInputBorder,
                   width: 1,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12.r),
-                borderSide: const BorderSide(
-                  color: ColorManager.authInputBorder,
+                borderSide: BorderSide(
+                  color: isDark ? ColorManager.darkBorder : ColorManager.authInputBorder,
                   width: 1,
                 ),
               ),

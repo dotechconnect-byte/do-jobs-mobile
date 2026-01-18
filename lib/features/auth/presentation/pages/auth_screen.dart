@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/consts/color_manager.dart';
 import '../../../../core/consts/font_manager.dart';
+import '../../../../core/providers/theme_provider.dart';
 import '../../../home/presentation/home_screen.dart';
 import 'sign_in_screen.dart';
 import 'sign_up_screen.dart';
@@ -30,26 +32,6 @@ class _AuthScreenState extends State<AuthScreen>
     super.dispose();
   }
 
-  void _handleBiometricLogin() {
-    // TODO: Implement biometric login
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Biometric login to be implemented',
-          style: GoogleFonts.poppins(
-            fontSize: FontSize.s14.sp,
-            fontWeight: FontWeightManager.medium,
-          ),
-        ),
-        backgroundColor: ColorManager.info,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
-        ),
-      ),
-    );
-  }
-
   void _handleGuestMode() {
     Navigator.pushReplacement(
       context,
@@ -61,18 +43,24 @@ class _AuthScreenState extends State<AuthScreen>
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.isDarkMode;
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              ColorManager.authPrimary.withValues(alpha: 0.05),
-              ColorManager.white,
-              ColorManager.authAccent.withValues(alpha: 0.03),
-            ],
-          ),
+          gradient: isDark
+              ? null
+              : LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    ColorManager.authPrimary.withValues(alpha: 0.05),
+                    ColorManager.white,
+                    ColorManager.authAccent.withValues(alpha: 0.03),
+                  ],
+                ),
+          color: isDark ? Colors.black : null,
         ),
         child: SafeArea(
           child: Column(
@@ -113,7 +101,7 @@ class _AuthScreenState extends State<AuthScreen>
                       style: GoogleFonts.poppins(
                         fontSize: FontSize.s32.sp,
                         fontWeight: FontWeightManager.bold,
-                        color: ColorManager.textPrimary,
+                        color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
                         letterSpacing: -1,
                       ),
                     ),
@@ -123,7 +111,7 @@ class _AuthScreenState extends State<AuthScreen>
                       style: GoogleFonts.poppins(
                         fontSize: FontSize.s14.sp,
                         fontWeight: FontWeightManager.regular,
-                        color: ColorManager.textSecondary,
+                        color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -137,15 +125,17 @@ class _AuthScreenState extends State<AuthScreen>
                 child: Container(
                   height: 48.h,
                   decoration: BoxDecoration(
-                    color: ColorManager.white,
+                    color: isDark ? ColorManager.darkCard : ColorManager.white,
                     borderRadius: BorderRadius.circular(12.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.06),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+                    boxShadow: isDark
+                        ? []
+                        : [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.06),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                   ),
                   padding: EdgeInsets.all(4.w),
                   child: TabBar(
@@ -168,7 +158,7 @@ class _AuthScreenState extends State<AuthScreen>
                     indicatorSize: TabBarIndicatorSize.tab,
                     dividerColor: Colors.transparent,
                     labelColor: ColorManager.white,
-                    unselectedLabelColor: ColorManager.textSecondary,
+                    unselectedLabelColor: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                     labelStyle: GoogleFonts.poppins(
                       fontSize: FontSize.s14.sp,
                       fontWeight: FontWeightManager.semiBold,
@@ -196,7 +186,6 @@ class _AuthScreenState extends State<AuthScreen>
                     SingleChildScrollView(
                       padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 32.h),
                       child: SignInScreen(
-                        onBiometricLogin: _handleBiometricLogin,
                         onGuestMode: _handleGuestMode,
                       ),
                     ),

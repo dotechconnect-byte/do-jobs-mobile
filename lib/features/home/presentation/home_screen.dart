@@ -523,6 +523,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildLocationSelector() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Row(
@@ -538,13 +540,13 @@ class _HomeScreenState extends State<HomeScreen> {
             style: GoogleFonts.poppins(
               fontSize: FontSize.s16.sp,
               fontWeight: FontWeightManager.semiBold,
-              color: ColorManager.textPrimary,
+              color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
             ),
           ),
           Icon(
             Icons.keyboard_arrow_down_rounded,
             size: 20.sp,
-            color: ColorManager.textPrimary,
+            color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
           ),
         ],
       ),

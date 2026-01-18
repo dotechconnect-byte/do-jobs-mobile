@@ -370,9 +370,7 @@ class _CompletedJobCardState extends State<CompletedJobCard> {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
-                    onPressed: () {
-                      // TODO: Navigate to edit feedback
-                    },
+                    onPressed: () => _showEditFeedbackBottomSheet(context),
                     icon: Icon(
                       Icons.edit_outlined,
                       size: 16.sp,
@@ -402,6 +400,356 @@ class _CompletedJobCardState extends State<CompletedJobCard> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showEditFeedbackBottomSheet(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final TextEditingController feedbackController = TextEditingController(
+      text: 'Great experience overall. The management was supportive and the work environment was pleasant.',
+    );
+
+    // Rating values
+    final Map<String, int> ratings = {
+      'Location': 4,
+      'Meals': 5,
+      'Supervisor': 5,
+      'Work Again': 5,
+      'Facilities': 4,
+    };
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          height: MediaQuery.of(context).size.height * 0.85,
+          decoration: BoxDecoration(
+            color: isDark ? ColorManager.darkCard : ColorManager.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24.r),
+              topRight: Radius.circular(24.r),
+            ),
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: EdgeInsets.only(top: 12.h),
+                width: 40.w,
+                height: 4.h,
+                decoration: BoxDecoration(
+                  color: isDark ? ColorManager.darkBorder : ColorManager.grey4,
+                  borderRadius: BorderRadius.circular(2.r),
+                ),
+              ),
+
+              // Header
+              Padding(
+                padding: EdgeInsets.all(20.w),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(10.w),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED)],
+                        ),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Icon(
+                        Icons.rate_review_outlined,
+                        size: 24.sp,
+                        color: ColorManager.white,
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Edit Your Feedback',
+                            style: GoogleFonts.poppins(
+                              fontSize: FontSize.s18.sp,
+                              fontWeight: FontWeightManager.bold,
+                              color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            widget.job.title,
+                            style: GoogleFonts.poppins(
+                              fontSize: FontSize.s12.sp,
+                              fontWeight: FontWeightManager.regular,
+                              color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(
+                        Icons.close_rounded,
+                        color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              Divider(
+                height: 1,
+                color: isDark ? ColorManager.darkBorder : ColorManager.grey4,
+              ),
+
+              // Content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Rating Categories
+                      Text(
+                        'Rate Your Experience',
+                        style: GoogleFonts.poppins(
+                          fontSize: FontSize.s14.sp,
+                          fontWeight: FontWeightManager.semiBold,
+                          color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
+
+                      ...ratings.keys.map((category) {
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 16.h),
+                          child: _buildEditableRatingRow(
+                            context,
+                            category,
+                            ratings[category]!,
+                            (newRating) {
+                              setModalState(() {
+                                ratings[category] = newRating;
+                              });
+                            },
+                            isDark,
+                          ),
+                        );
+                      }),
+
+                      SizedBox(height: 8.h),
+
+                      // Feedback Text
+                      Text(
+                        'Your Comments',
+                        style: GoogleFonts.poppins(
+                          fontSize: FontSize.s14.sp,
+                          fontWeight: FontWeightManager.semiBold,
+                          color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: 12.h),
+
+                      TextField(
+                        controller: feedbackController,
+                        maxLines: 5,
+                        style: GoogleFonts.poppins(
+                          fontSize: FontSize.s13.sp,
+                          fontWeight: FontWeightManager.regular,
+                          color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Share your experience with this job...',
+                          hintStyle: GoogleFonts.poppins(
+                            fontSize: FontSize.s13.sp,
+                            fontWeight: FontWeightManager.regular,
+                            color: isDark ? ColorManager.darkTextSecondary : ColorManager.textTertiary,
+                          ),
+                          filled: true,
+                          fillColor: isDark
+                              ? ColorManager.authPrimary.withValues(alpha: 0.05)
+                              : const Color(0xFFF9FAFB),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                            borderSide: BorderSide(
+                              color: isDark ? ColorManager.darkBorder : ColorManager.grey4,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                            borderSide: BorderSide(
+                              color: isDark ? ColorManager.darkBorder : ColorManager.grey4,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                            borderSide: const BorderSide(
+                              color: ColorManager.authPrimary,
+                              width: 2,
+                            ),
+                          ),
+                          contentPadding: EdgeInsets.all(16.w),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Bottom buttons
+              Container(
+                padding: EdgeInsets.all(20.w),
+                decoration: BoxDecoration(
+                  color: isDark ? ColorManager.darkCard : ColorManager.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 14.h),
+                          side: BorderSide(
+                            color: isDark ? ColorManager.darkBorder : ColorManager.grey4,
+                            width: 1.5,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                        ),
+                        child: Text(
+                          'Cancel',
+                          style: GoogleFonts.poppins(
+                            fontSize: FontSize.s14.sp,
+                            fontWeight: FontWeightManager.semiBold,
+                            color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      flex: 2,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  Icon(
+                                    Icons.check_circle_outline,
+                                    color: ColorManager.white,
+                                    size: 20.sp,
+                                  ),
+                                  SizedBox(width: 12.w),
+                                  Text(
+                                    'Feedback updated successfully!',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: FontSize.s13.sp,
+                                      fontWeight: FontWeightManager.medium,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              backgroundColor: const Color(0xFF10B981),
+                              behavior: SnackBarBehavior.floating,
+                              margin: EdgeInsets.all(16.w),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorManager.authPrimary,
+                          foregroundColor: ColorManager.white,
+                          padding: EdgeInsets.symmetric(vertical: 14.h),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                        ),
+                        child: Text(
+                          'Save Changes',
+                          style: GoogleFonts.poppins(
+                            fontSize: FontSize.s14.sp,
+                            fontWeight: FontWeightManager.semiBold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditableRatingRow(
+    BuildContext context,
+    String label,
+    int rating,
+    Function(int) onRatingChanged,
+    bool isDark,
+  ) {
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: isDark
+            ? ColorManager.authPrimary.withValues(alpha: 0.05)
+            : const Color(0xFFF9FAFB),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: isDark ? ColorManager.darkBorder : ColorManager.grey4.withValues(alpha: 0.5),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: FontSize.s13.sp,
+              fontWeight: FontWeightManager.semiBold,
+              color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
+            ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(
+              5,
+              (index) => GestureDetector(
+                onTap: () => onRatingChanged(index + 1),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 2.w),
+                  child: Icon(
+                    Icons.star,
+                    size: 24.sp,
+                    color: index < rating
+                        ? const Color(0xFFFBBF24)
+                        : (isDark ? ColorManager.darkBorder : ColorManager.grey4),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/consts/color_manager.dart';
 import '../../../../core/consts/font_manager.dart';
+import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/account_type_toggle.dart';
 import '../../../../core/widgets/custom_button.dart';
@@ -156,6 +158,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.isDarkMode;
+
     return Form(
       key: _formKey,
       child: Column(
@@ -167,7 +172,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             style: GoogleFonts.poppins(
               fontSize: FontSize.s14.sp,
               fontWeight: FontWeightManager.semiBold,
-              color: ColorManager.textPrimary,
+              color: isDark ? ColorManager.darkTextPrimary : ColorManager.textPrimary,
             ),
           ),
           SizedBox(height: 8.h),
@@ -334,7 +339,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 style: GoogleFonts.poppins(
                   fontSize: FontSize.s10.sp,
                   fontWeight: FontWeightManager.regular,
-                  color: ColorManager.textTertiary,
+                  color: isDark ? ColorManager.darkTextSecondary : ColorManager.textTertiary,
                   height: 1.4,
                 ),
               ),
@@ -370,7 +375,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     style: GoogleFonts.poppins(
                       fontSize: FontSize.s14.sp,
                       fontWeight: FontWeightManager.regular,
-                      color: ColorManager.textSecondary,
+                      color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                     ),
                     children: [
                       TextSpan(
@@ -387,7 +392,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         style: GoogleFonts.poppins(
                           fontSize: FontSize.s14.sp,
                           fontWeight: FontWeightManager.regular,
-                          color: ColorManager.textSecondary,
+                          color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
                         ),
                       ),
                       TextSpan(
@@ -420,7 +425,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             children: [
               Expanded(
                 child: Divider(
-                  color: ColorManager.grey3,
+                  color: isDark ? ColorManager.darkBorder : ColorManager.grey3,
                   thickness: 1,
                 ),
               ),
@@ -431,13 +436,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   style: GoogleFonts.poppins(
                     fontSize: FontSize.s12.sp,
                     fontWeight: FontWeightManager.medium,
-                    color: ColorManager.textTertiary,
+                    color: isDark ? ColorManager.darkTextSecondary : ColorManager.textTertiary,
                   ),
                 ),
               ),
               Expanded(
                 child: Divider(
-                  color: ColorManager.grey3,
+                  color: isDark ? ColorManager.darkBorder : ColorManager.grey3,
                   thickness: 1,
                 ),
               ),
