@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "390787182872",
+    "project_id": "dojobs-d7903",
+    "storage_bucket": "dojobs-d7903.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390787182872:android:27852deb68ff6f84882e6d",
+        "android_client_info": {
+          "package_name": "com.example.do_jobs_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMSWz_uB6Nh5fS6MMJoqmcNwsUQAxqVyc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

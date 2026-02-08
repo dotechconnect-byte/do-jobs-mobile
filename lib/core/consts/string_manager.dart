@@ -17,6 +17,7 @@ class AppStrings {
   static const String cBioMetricEnable= 'cBioMetricEnable';
   static const String cEIDVerifierInside= 'cEIDVerifierInside';
   static const String cFirebaseToken= 'cFirebaseToken';
+  static const String cUserRole= 'cUserRole';
 
 
   // //CleverTap Event Names

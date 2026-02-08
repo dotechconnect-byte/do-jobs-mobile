@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/consts/color_manager.dart';
 import '../../../../core/consts/font_manager.dart';
 import '../../../../core/providers/theme_provider.dart';
@@ -9,6 +10,11 @@ import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/account_type_toggle.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_text_field.dart';
+import '../../../../injection_container.dart';
+import '../bloc/auth_bloc.dart';
+import '../bloc/auth_event.dart';
+import '../bloc/auth_state.dart';
+import '../../../home/presentation/home_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   final VoidCallback onGuestMode;
@@ -102,7 +108,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  Future<void> _handleSignUp() async {
+  Future<void> _handleSignUp(BuildContext blocContext) async {
     if (!_agreeToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -124,34 +130,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
 
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
-      // TODO: Implement actual sign up logic
-      await Future.delayed(const Duration(seconds: 2));
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Account created successfully! Navigation to be implemented.',
-              style: GoogleFonts.poppins(
-                fontSize: FontSize.s14.sp,
-                fontWeight: FontWeightManager.medium,
+      // Trigger sign up event based on account type
+      if (_accountType == AccountType.personal) {
+        blocContext.read<AuthBloc>().add(
+              SignUpPersonalEvent(
+                email: _emailController.text.trim(),
+                password: _passwordController.text,
+                fullName: _fullNameController.text.trim(),
+                phone: _phoneController.text.trim(),
               ),
-            ),
-            backgroundColor: ColorManager.success,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-          ),
-        );
+            );
+      } else {
+        // For service provider, we need industry field
+        // Since you don't have industry field in the form, let me check if it exists
+        blocContext.read<AuthBloc>().add(
+              SignUpServiceEvent(
+                email: _emailController.text.trim(),
+                password: _passwordController.text,
+                fullName: _fullNameController.text.trim(),
+                phone: _phoneController.text.trim(),
+                companyName: _companyNameController.text.trim(),
+                industry: 'General', // Default value - you may want to add an industry field
+              ),
+            );
       }
     }
   }
@@ -161,11 +162,70 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.isDarkMode;
 
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    return BlocProvider(
+      create: (context) => locator<AuthBloc>(),
+      child: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is SignUpSuccess) {
+            // Show success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.signUpModel.message ?? 'Account created successfully!',
+                  style: GoogleFonts.poppins(
+                    fontSize: FontSize.s14.sp,
+                    fontWeight: FontWeightManager.medium,
+                  ),
+                ),
+                backgroundColor: ColorManager.success,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+
+            // Navigate to home screen
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (context.mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomeScreen(isGuest: false),
+                  ),
+                );
+              }
+            });
+          } else if (state is AuthError) {
+            // Show error message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.message,
+                  style: GoogleFonts.poppins(
+                    fontSize: FontSize.s14.sp,
+                    fontWeight: FontWeightManager.medium,
+                  ),
+                ),
+                backgroundColor: const Color(0xFFEF4444),
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          final isLoading = state is AuthLoading;
+
+          return Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
           // Account Type Label
           Text(
             'Account Type',
@@ -412,52 +472,55 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           SizedBox(height: 24.h),
 
-          // Create Account Button
-          CustomButton(
-            text: 'Create Account',
-            onPressed: _handleSignUp,
-            isLoading: _isLoading,
-          ),
-          SizedBox(height: 24.h),
+                // Create Account Button
+                CustomButton(
+                  text: 'Create Account',
+                  onPressed: () => _handleSignUp(context),
+                  isLoading: isLoading,
+                ),
+                SizedBox(height: 24.h),
 
-          // OR Divider
-          Row(
-            children: [
-              Expanded(
-                child: Divider(
-                  color: isDark ? ColorManager.darkBorder : ColorManager.grey3,
-                  thickness: 1,
+                // OR Divider
+                Row(
+                  children: [
+                    Expanded(
+                      child: Divider(
+                        color: isDark ? ColorManager.darkBorder : ColorManager.grey3,
+                        thickness: 1,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Text(
+                        'OR',
+                        style: GoogleFonts.poppins(
+                          fontSize: FontSize.s12.sp,
+                          fontWeight: FontWeightManager.medium,
+                          color: isDark ? ColorManager.darkTextSecondary : ColorManager.textTertiary,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Divider(
+                        color: isDark ? ColorManager.darkBorder : ColorManager.grey3,
+                        thickness: 1,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: Text(
-                  'OR',
-                  style: GoogleFonts.poppins(
-                    fontSize: FontSize.s12.sp,
-                    fontWeight: FontWeightManager.medium,
-                    color: isDark ? ColorManager.darkTextSecondary : ColorManager.textTertiary,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Divider(
-                  color: isDark ? ColorManager.darkBorder : ColorManager.grey3,
-                  thickness: 1,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 24.h),
+                SizedBox(height: 24.h),
 
-          // Guest Mode Button
-          CustomButton(
-            text: 'Guest Mode',
-            onPressed: widget.onGuestMode,
-            type: ButtonType.secondary,
-            icon: Icons.person_outline_rounded,
-          ),
-        ],
+                // Guest Mode Button
+                CustomButton(
+                  text: 'Guest Mode',
+                  onPressed: widget.onGuestMode,
+                  type: ButtonType.secondary,
+                  icon: Icons.person_outline_rounded,
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

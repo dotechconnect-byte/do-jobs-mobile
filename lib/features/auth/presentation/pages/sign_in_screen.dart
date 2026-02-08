@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/consts/color_manager.dart';
 import '../../../../core/consts/font_manager.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../home/presentation/home_screen.dart';
+import '../../../../injection_container.dart';
+import '../bloc/auth_bloc.dart';
+import '../bloc/auth_event.dart';
+import '../bloc/auth_state.dart';
 
 class SignInScreen extends StatefulWidget {
   final VoidCallback onGuestMode;
@@ -25,7 +30,6 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -68,58 +72,13 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
 
   Future<void> _handleSignIn() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
-      // Simulate authentication delay
-      await Future.delayed(const Duration(seconds: 1));
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      // If validation passes, proceed to home screen
-      // In a real app, this would call an authentication API
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.check_circle_outline, color: ColorManager.white, size: 20.sp),
-                SizedBox(width: 12.w),
-                Expanded(
-                  child: Text(
-                    'Sign in successful!',
-                    style: GoogleFonts.poppins(
-                      fontSize: FontSize.s13.sp,
-                      fontWeight: FontWeightManager.medium,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: const Color(0xFF10B981),
-            behavior: SnackBarBehavior.floating,
-            margin: EdgeInsets.all(16.w),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-
-        // Navigate to home screen
-        await Future.delayed(const Duration(milliseconds: 500));
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const HomeScreen(isGuest: false),
+      // Trigger sign in event
+      context.read<AuthBloc>().add(
+            SignInEvent(
+              email: _emailController.text.trim(),
+              password: _passwordController.text,
             ),
           );
-        }
-      }
     }
   }
 
@@ -128,165 +87,259 @@ class _SignInScreenState extends State<SignInScreen> with SingleTickerProviderSt
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.isDarkMode;
 
-    return Form(
-      key: _formKey,
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: SlideTransition(
-          position: _slideAnimation,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Email Field with enhanced styling
-              _buildEnhancedTextField(
-                controller: _emailController,
-                label: 'Email',
-                hintText: 'Enter your email address',
-                prefixIcon: Icons.email_outlined,
-                isDark: isDark,
-                validator: Validators.validateEmail,
-              ),
-              SizedBox(height: 20.h),
-
-              // Password Field with enhanced styling
-              _buildEnhancedTextField(
-                controller: _passwordController,
-                label: 'Password',
-                hintText: 'Enter your password',
-                prefixIcon: Icons.lock_outline_rounded,
-                isPassword: true,
-                isDark: isDark,
-                validator: Validators.validatePassword,
-              ),
-              SizedBox(height: 12.h),
-
-              // Forgot password with hover effect
-              Align(
-                alignment: Alignment.centerRight,
-                child: InkWell(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Row(
-                          children: [
-                            Icon(Icons.info_outline, color: ColorManager.white, size: 20.sp),
-                            SizedBox(width: 12.w),
-                            Text(
-                              'Forgot password to be implemented',
-                              style: GoogleFonts.poppins(
-                                fontSize: FontSize.s13.sp,
-                                fontWeight: FontWeightManager.medium,
-                              ),
-                            ),
-                          ],
-                        ),
-                        backgroundColor: ColorManager.authPrimary,
-                        behavior: SnackBarBehavior.floating,
-                        margin: EdgeInsets.all(16.w),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
+    return BlocProvider(
+      create: (context) => locator<AuthBloc>(),
+      child: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is SignInSuccess) {
+            // Show success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    Icon(Icons.check_circle_outline,
+                        color: ColorManager.white, size: 20.sp),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: Text(
+                        state.signInModel.message ?? 'Sign in successful!',
+                        style: GoogleFonts.poppins(
+                          fontSize: FontSize.s13.sp,
+                          fontWeight: FontWeightManager.medium,
                         ),
                       ),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(8.r),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Forgot password?',
-                          style: GoogleFonts.poppins(
-                            fontSize: FontSize.s14.sp,
-                            fontWeight: FontWeightManager.semiBold,
-                            color: ColorManager.authPrimary,
+                    ),
+                  ],
+                ),
+                backgroundColor: const Color(0xFF10B981),
+                behavior: SnackBarBehavior.floating,
+                margin: EdgeInsets.all(16.w),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+
+            // Navigate to home screen
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (context.mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomeScreen(isGuest: false),
+                  ),
+                );
+              }
+            });
+          } else if (state is AuthError) {
+            // Show error message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    Icon(Icons.error_outline,
+                        color: ColorManager.white, size: 20.sp),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: Text(
+                        state.message,
+                        style: GoogleFonts.poppins(
+                          fontSize: FontSize.s13.sp,
+                          fontWeight: FontWeightManager.medium,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                backgroundColor: const Color(0xFFEF4444),
+                behavior: SnackBarBehavior.floating,
+                margin: EdgeInsets.all(16.w),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          final isLoading = state is AuthLoading;
+
+          return Form(
+            key: _formKey,
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: SlideTransition(
+                position: _slideAnimation,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Email Field with enhanced styling
+                    _buildEnhancedTextField(
+                      controller: _emailController,
+                      label: 'Email',
+                      hintText: 'Enter your email address',
+                      prefixIcon: Icons.email_outlined,
+                      isDark: isDark,
+                      validator: Validators.validateEmail,
+                    ),
+                    SizedBox(height: 20.h),
+
+                    // Password Field with enhanced styling
+                    _buildEnhancedTextField(
+                      controller: _passwordController,
+                      label: 'Password',
+                      hintText: 'Enter your password',
+                      prefixIcon: Icons.lock_outline_rounded,
+                      isPassword: true,
+                      isDark: isDark,
+                      validator: Validators.validatePassword,
+                    ),
+                    SizedBox(height: 12.h),
+
+                    // Forgot password with hover effect
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: InkWell(
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  Icon(Icons.info_outline,
+                                      color: ColorManager.white, size: 20.sp),
+                                  SizedBox(width: 12.w),
+                                  Text(
+                                    'Forgot password to be implemented',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: FontSize.s13.sp,
+                                      fontWeight: FontWeightManager.medium,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              backgroundColor: ColorManager.authPrimary,
+                              behavior: SnackBarBehavior.floating,
+                              margin: EdgeInsets.all(16.w),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                            ),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.w, vertical: 4.h),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Forgot password?',
+                                style: GoogleFonts.poppins(
+                                  fontSize: FontSize.s14.sp,
+                                  fontWeight: FontWeightManager.semiBold,
+                                  color: ColorManager.authPrimary,
+                                ),
+                              ),
+                              SizedBox(width: 4.w),
+                              Icon(
+                                Icons.arrow_forward_rounded,
+                                size: 16.sp,
+                                color: ColorManager.authPrimary,
+                              ),
+                            ],
                           ),
                         ),
-                        SizedBox(width: 4.w),
-                        Icon(
-                          Icons.arrow_forward_rounded,
-                          size: 16.sp,
-                          color: ColorManager.authPrimary,
+                      ),
+                    ),
+                    SizedBox(height: 32.h),
+
+                    // Enhanced Sign In Button with gradient
+                    _buildGradientButton(
+                      text: 'Sign In',
+                      onPressed: _handleSignIn,
+                      isLoading: isLoading,
+                      isDark: isDark,
+                    ),
+                    SizedBox(height: 28.h),
+
+                    // Enhanced OR Divider
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 1,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.transparent,
+                                  isDark
+                                      ? ColorManager.darkBorder
+                                      : ColorManager.grey3,
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20.w),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12.w, vertical: 6.h),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? ColorManager.darkCard
+                                      .withValues(alpha: 0.5)
+                                  : ColorManager.grey4.withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(20.r),
+                              border: Border.all(
+                                color: isDark
+                                    ? ColorManager.darkBorder
+                                    : ColorManager.grey4,
+                              ),
+                            ),
+                            child: Text(
+                              'OR',
+                              style: GoogleFonts.poppins(
+                                fontSize: FontSize.s12.sp,
+                                fontWeight: FontWeightManager.semiBold,
+                                color: isDark
+                                    ? ColorManager.darkTextSecondary
+                                    : ColorManager.textSecondary,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: 1,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  isDark
+                                      ? ColorManager.darkBorder
+                                      : ColorManager.grey3,
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                  ),
+                    SizedBox(height: 28.h),
+
+                    // Enhanced Guest Mode Button
+                    _buildGuestModeButton(isDark: isDark),
+                  ],
                 ),
               ),
-              SizedBox(height: 32.h),
-
-              // Enhanced Sign In Button with gradient
-              _buildGradientButton(
-                text: 'Sign In',
-                onPressed: _handleSignIn,
-                isLoading: _isLoading,
-                isDark: isDark,
-              ),
-              SizedBox(height: 28.h),
-
-              // Enhanced OR Divider
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 1,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.transparent,
-                            isDark ? ColorManager.darkBorder : ColorManager.grey3,
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? ColorManager.darkCard.withValues(alpha: 0.5)
-                            : ColorManager.grey4.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(20.r),
-                        border: Border.all(
-                          color: isDark ? ColorManager.darkBorder : ColorManager.grey4,
-                        ),
-                      ),
-                      child: Text(
-                        'OR',
-                        style: GoogleFonts.poppins(
-                          fontSize: FontSize.s12.sp,
-                          fontWeight: FontWeightManager.semiBold,
-                          color: isDark ? ColorManager.darkTextSecondary : ColorManager.textSecondary,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 1,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            isDark ? ColorManager.darkBorder : ColorManager.grey3,
-                            Colors.transparent,
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 28.h),
-
-              // Enhanced Guest Mode Button
-              _buildGuestModeButton(isDark: isDark),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

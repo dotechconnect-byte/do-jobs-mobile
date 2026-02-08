@@ -51,6 +51,11 @@ dependencies:
   signature: ^6.3.0
   image_picker: ^1.2.1
   file_picker: ^10.3.8
+  # Firebase & Push Notifications
+  firebase_core: ^3.8.1
+  firebase_messaging: ^15.1.5
+  flutter_local_notifications: ^18.0.1
+  flutter_bloc: ^9.1.1
 
 dev_dependencies:
   flutter_test:
